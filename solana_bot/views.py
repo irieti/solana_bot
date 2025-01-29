@@ -77,6 +77,7 @@ async def find_largest_holders(
     semaphore = asyncio.Semaphore(20)
     all_accounts = []
     balance_changes = []
+    reversed_balance_changes = []
 
     while True:
         all_accounts = []
@@ -150,12 +151,13 @@ async def find_largest_holders(
                 message = (
                     f"{cur_time}\n"
                     f"<b>{mint}</b>\n"
-                    f"{balance_changes}\n"
+                    f"{reversed_balance_changes}\n"
                     f"<b>🔴 {formatted_total_amount}<br>\n"
                     f"{wallet_details}"
                 )
 
                 balance_changes.append("🔴")
+                reversed_balance_changes = list(reversed(balance_changes))
             elif total_amount > previous_total_balance:
                 print(
                     f"Balance changed for mint {mint}! Previous total: {previous_total_balance}, New total: {formatted_total_amount}"
@@ -163,22 +165,24 @@ async def find_largest_holders(
                 message = (
                     f"{cur_time}\n"
                     f"<b>{mint}</b>\n"
-                    f"{balance_changes}\n"
+                    f"{reversed_balance_changes}\n"
                     f"<b>🟢 {formatted_total_amount}</b>\n"
                     f"{wallet_details}"
                 )
 
                 balance_changes.append("🟢")
+                reversed_balance_changes = list(reversed(balance_changes))
         else:
             print(f"Balance has not changed for mint {mint}.")
             message = (
                 f"{cur_time}\n"
                 f"<b>{mint}</b>\n"
-                f"{balance_changes}\n"
+                f"{reversed_balance_changes}\n"
                 f"<b>🟠 {formatted_total_amount}</b>\n"
                 f"{wallet_details}"
             )
             balance_changes.append("🟠")
+            reversed_balance_changes = list(reversed(balance_changes))
 
         previous_total_balance = total_amount
 
