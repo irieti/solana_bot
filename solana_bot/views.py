@@ -138,7 +138,7 @@ async def find_largest_holders(
 
         wallet_details = "\n".join(
             [
-                f"{wallet['name']}, {(wallet['amount']/1000000) / 1000000000:,.4f}%"
+                f"{wallet['name']}, {(wallet['amount']/1000000) / 10000000:,.4f}%"
                 for wallet in matching_wallets
             ]
         )
