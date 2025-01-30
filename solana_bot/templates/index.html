@@ -50,6 +50,11 @@
     <ul id="active-loops" class="space-y-2">
         <li class="text-gray-500">Loading...</li>
     </ul>
+
+    <h3 class="text-xl font-bold mb-4">Loop Updates</h3>
+    <ul id="loop-updates" class="space-y-2">
+        <li class="text-gray-500">Waiting for updates...</li>
+    </ul>
 </div>
 
 <script>
@@ -137,6 +142,68 @@
         // Update active loops every 5 seconds
         setInterval(updateActiveLoops, 5000);
         updateActiveLoops();
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const updatesContainer = document.getElementById('loop-updates');
+
+        function fetchLoopUpdates() {
+            fetch('/get-loop-updates/')
+                .then((response) => response.json())
+                .then((data) => {
+                    updatesContainer.innerHTML = ''; // Очищаем контейнер
+
+                    if (
+                        !data.updates ||
+                        Object.keys(data.updates).length === 0
+                    ) {
+                        const emptyItem = document.createElement('li');
+                        emptyItem.className = 'text-gray-500';
+                        emptyItem.textContent = 'Waiting for updates...';
+                        updatesContainer.appendChild(emptyItem);
+                        return;
+                    }
+
+                    Object.values(data.updates).forEach((update) => {
+                        const listItem = document.createElement('li');
+                        listItem.className =
+                            'p-3 bg-gray-100 rounded mb-3 shadow-sm';
+
+                        // Создаем HTML для элемента с улучшенным форматированием
+                        listItem.innerHTML = `
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-lg">${update.mint}</span>
+                                <span class="text-sm text-gray-600">${update.time}</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-sm font-medium">${update.reversed_balance_changes || ''}</span>
+                            </div>
+                            <div class="text-xl font-semibold mb-2">
+                                ${update.sign}${update.formatted_total_amount}
+                            </div>
+                            <div class="text-sm text-gray-700 whitespace-pre-line">
+                                ${update.wallet_details}
+                            </div>
+                        `;
+
+                        updatesContainer.appendChild(listItem);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error fetching updates:', error);
+                    updatesContainer.innerHTML = `
+                        <li class="p-2 bg-red-100 text-red-700 rounded">
+                            Error loading updates. Retrying...
+                        </li>
+                    `;
+                });
+        }
+
+        // Начальная загрузка
+        fetchLoopUpdates();
+
+        // Обновление каждую секунду
+        setInterval(fetchLoopUpdates, 1000);
     });
 </script>
 {% endblock %}
