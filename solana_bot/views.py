@@ -211,6 +211,7 @@ async def find_largest_holders(
                         "amount": account["amount"],
                     }
                 )
+        num_matching_wallets = len(matching_wallets)
 
         total_amount = sum(wallet["amount"] for wallet in matching_wallets)
         if token_decimals[mint] == 6:
@@ -246,6 +247,7 @@ async def find_largest_holders(
                 update_balance(
                     mint=mint,
                     formatted_total_amount=formatted_total_amount,
+                    num_matching_wallets=num_matching_wallets,
                     wallet_details=wallet_details,
                     formatted_balance_changes=formatted_balance_changes,
                     sign="🔴",
@@ -274,6 +276,7 @@ async def find_largest_holders(
                 update_balance(
                     mint=mint,
                     formatted_total_amount=formatted_total_amount,
+                    num_matching_wallets=num_matching_wallets,
                     wallet_details=wallet_details,
                     formatted_balance_changes=formatted_balance_changes,
                     sign="🟢",
@@ -296,6 +299,7 @@ async def find_largest_holders(
             update_balance(
                 mint=mint,
                 formatted_total_amount=formatted_total_amount,
+                num_matching_wallets=num_matching_wallets,
                 wallet_details=wallet_details,
                 formatted_balance_changes=formatted_balance_changes,
                 sign="⚪️",
@@ -425,6 +429,7 @@ def get_loop_updates(request):
 def update_balance(
     mint,
     formatted_total_amount,
+    num_matching_wallets,
     wallet_details,
     formatted_balance_changes,
     sign,
@@ -438,7 +443,8 @@ def update_balance(
             "time": cur_time,
             "mint": str(mint)[:6],
             "name": token_name[mint],
-            "formatted_total_amount": formatted_total_amount,  # Ensure consistent type
+            "formatted_total_amount": formatted_total_amount,
+            "num_matching_wallets": num_matching_wallets,
             "wallet_details": str(wallet_details),  # Ensure string format
             "formatted_balance_changes": formatted_balance_changes,
             "sign": sign,
