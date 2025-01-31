@@ -15,6 +15,15 @@ import time
 import os
 from dotenv import load_dotenv
 import random
+from telegram import Update
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    filters,
+    CallbackContext,
+)
+
 
 load_dotenv()
 
@@ -32,6 +41,29 @@ current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 active_loops = {}
 loop_statuses = defaultdict(lambda: False)
 loop_updates = {}
+token_name = {}
+token_decimals = {}
+
+
+def get_token_name(mint):
+    response = requests.post(
+        url,
+        headers={"Content-Type": "application/json"},
+        json={
+            "jsonrpc": "2.0",
+            "id": "test",
+            "method": "getAsset",
+            "params": {"id": mint},
+        },
+    )
+
+    data = response.json()
+
+    name = data["result"]["content"]["metadata"]["name"]
+    token_decimals[mint] = data["result"]["token_info"]["decimals"]
+
+    print(f"Name: {name}")
+    return name
 
 
 def save_largest_accounts(data, mint_address):
@@ -65,7 +97,7 @@ async def fetch_page_with_retry(session, page, semaphore, mint):
 
                 async with session.post(url, json=payload) as response:
                     if response.status == 429:
-                        delay = base_delay * (2**attempt) + random.random()
+                        delay = 0.01
                         print(
                             f"Rate limited on page {page}, attempt {attempt + 1}. Waiting {delay:.2f}s"
                         )
@@ -103,11 +135,13 @@ async def find_largest_holders(
 ):
     print(f"find_largest_holders for mint {mint} has started")
     previous_total_balance = 0
+    formatted_previous_total_amount = 0
     max_pages = 1000  # Increased from 10 to 1000
     semaphore = asyncio.Semaphore(5)  # Reduced from 20 to 5
     all_accounts = []
     balance_changes = []
     reversed_balance_changes = []
+    sign = ""
 
     while True:
         if stop_flag.is_set():
@@ -186,7 +220,14 @@ async def find_largest_holders(
                 )
 
         total_amount = sum(wallet["amount"] for wallet in matching_wallets)
-        formatted_total_amount = f"{(total_amount/1000000) / 10000000:,.4f}"
+        if token_decimals[mint] == 6:
+            formatted_total_amount = (
+                f"{((total_amount/1000000) / 1000000000) * 100:,.4f}%"
+            )
+        elif token_decimals[mint] == 9:
+            formatted_total_amount = (
+                f"{((total_amount/1000000000) / 1000000000) * 100:,.4f}%"
+            )
 
         matching_wallets.sort(key=lambda wallet: wallet["amount"], reverse=True)
         wallets_dict = {wallet["wallet"]: wallet["name"] for wallet in wallets_data}
@@ -196,11 +237,16 @@ async def find_largest_holders(
         for wallet in matching_wallets:
             wallet["name"] = wallets_dict.get(wallet["wallet"], "Unknown")
 
+        if token_decimals[mint] == 6:
+            wallet_amount = f"{((wallet['amount']/1000000) / 1000000000) * 100:,.4f}%"
+
+        elif token_decimals[mint] == 9:
+            wallet_amount = (
+                f"{((wallet['amount']/1000000000) / 1000000000) * 100:,.4f}%"
+            )
+
         wallet_details = "\n".join(
-            [
-                f"{wallet['name']}, {(wallet['amount']/1000000) / 10000000:,.4f}%"
-                for wallet in matching_wallets
-            ]
+            [f"{wallet['name']}, {wallet_amount}" for wallet in matching_wallets]
         )
 
         if total_amount != previous_total_balance:
@@ -210,7 +256,7 @@ async def find_largest_holders(
                     formatted_total_amount=formatted_total_amount,
                     wallet_details=wallet_details,
                     reversed_balance_changes=reversed_balance_changes,
-                    balance_changes=balance_changes,
+                    sign="🔴",
                 )
                 print(
                     f"Balance changed for mint {mint}! Previous total: {previous_total_balance}, New total: {total_amount}"
@@ -223,7 +269,7 @@ async def find_largest_holders(
                     f"{wallet_details}"
                 )
 
-                balance_changes.append("🔴")
+                balance_changes.append(f"🔴 {formatted_previous_total_amount}%")
                 reversed_balance_changes = list(reversed(balance_changes))
             elif total_amount > previous_total_balance:
                 print(
@@ -234,7 +280,7 @@ async def find_largest_holders(
                     formatted_total_amount=formatted_total_amount,
                     wallet_details=wallet_details,
                     reversed_balance_changes=reversed_balance_changes,
-                    balance_changes=balance_changes,
+                    sign="🟢",
                 )
                 message = (
                     f"{cur_time}\n"
@@ -244,7 +290,7 @@ async def find_largest_holders(
                     f"{wallet_details}"
                 )
 
-                balance_changes.append("🟢")
+                balance_changes.append(f"🟢 {formatted_previous_total_amount}%")
                 reversed_balance_changes = list(reversed(balance_changes))
         else:
             print(f"Balance has not changed for mint {mint}.")
@@ -253,7 +299,7 @@ async def find_largest_holders(
                 formatted_total_amount=formatted_total_amount,
                 wallet_details=wallet_details,
                 reversed_balance_changes=reversed_balance_changes,
-                balance_changes=balance_changes,
+                sign="⚪️",
             )
             message = (
                 f"{cur_time}\n"
@@ -262,10 +308,13 @@ async def find_largest_holders(
                 f"<b>🟠 {formatted_total_amount}</b>\n"
                 f"{wallet_details}"
             )
-            balance_changes.append("🟠")
+            balance_changes.append(f"⚪️ {formatted_previous_total_amount}%")
             reversed_balance_changes = list(reversed(balance_changes))
 
         previous_total_balance = total_amount
+        formatted_previous_total_amount = (
+            f"{(previous_total_balance/1000000) / 10000000:,.4f}"
+        )
 
         if len(balance_changes) > 10:
             balance_changes.pop(0)
@@ -295,11 +344,12 @@ def send_telegram_message(message, parse_mode="HTML"):
 
 
 class TokenTracker:
-    def __init__(self, mint, loop_time):
+    def __init__(self, mint, loop_time, name=None):
         self.mint = mint
         self.loop_time = int(loop_time)  # Уникальное время ожидания для каждого mint
         self.stop_flag = threading.Event()
         self.balance_changes = []
+        self.name = name
 
     def start(self):
         """Запускает поток для отслеживания изменений баланса для этого mint с уникальным loop_time."""
@@ -354,6 +404,7 @@ def index(request):
             for mint, tracker in active_loops.items()
         ],
     }
+
     return render(request, "index.html", context)
 
 
@@ -363,7 +414,7 @@ def get_loop_updates(request):
         return JsonResponse(
             {
                 "status": "success",
-                "updates": loop_updates,
+                "updates": (loop_updates),
                 "timestamp": datetime.now().isoformat(),
             }
         )
@@ -376,7 +427,7 @@ def update_balance(
     formatted_total_amount,
     wallet_details,
     reversed_balance_changes,
-    balance_changes,
+    sign,
 ):
     try:
         global loop_updates
@@ -385,12 +436,13 @@ def update_balance(
         # Update the loop_updates dictionary
         loop_updates[mint] = {
             "time": cur_time,
-            "mint": mint,
+            "mint": token_name[mint],
             "formatted_total_amount": formatted_total_amount,  # Ensure consistent type
             "wallet_details": str(wallet_details),  # Ensure string format
             "reversed_balance_changes": reversed_balance_changes,
-            "sign": balance_changes[-1],
+            "sign": sign,
         }
+        print(f"{loop_updates}")
 
         # Optional: Limit the size of loop_updates to prevent memory issues
         if len(loop_updates) > 1000:  # Adjust limit as needed
@@ -411,7 +463,10 @@ def start_loop(request):
         loop_time = data.get("loop_time")
 
         if mint and loop_time:
-            tracker = TokenTracker(mint, loop_time)
+            name = get_token_name(mint)
+            token_name[mint] = name
+            print(f"name: {name}")
+            tracker = TokenTracker(mint, loop_time, name)
             tracker.start()
 
             return JsonResponse({"status": "success", "mint": mint})
@@ -436,7 +491,79 @@ def stop_loop(request):
 @csrf_exempt
 def get_active_loops(request):
     loops = [
-        {"mint": mint, "loop_time": tracker.loop_time}
+        {"mint": mint, "loop_time": tracker.loop_time, "name": tracker.name}
         for mint, tracker in active_loops.items()
     ]
     return JsonResponse({"loops": loops})
+
+
+WALLET_FILE = "wallets.json"
+
+
+def load_wallets():
+    """Загружает кошельки из wallet.json"""
+    try:
+        with open(WALLET_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+
+@csrf_exempt
+def save_wallets(wallet_data):
+    """Сохраняет обновленный список кошельков"""
+    with open(WALLET_FILE, "w", encoding="utf-8") as f:
+        json.dump(wallet_data, f, indent=4, ensure_ascii=False)
+
+
+@csrf_exempt
+def new_wallet(request):
+    """Добавляет новый кошелек в wallet.json"""
+    if request.method == "POST":
+        wallet_address = request.POST.get("wallet")  # Получаем адрес кошелька из формы
+        wallet_name = request.POST.get("name")
+
+        if not wallet_address:
+            return JsonResponse(
+                {"status": "error", "message": "No wallet address provided"}, status=400
+            )
+
+        wallets = load_wallets()
+
+        # Проверяем, нет ли уже такого адреса
+        if any(w["wallet"] == wallet_address for w in wallets):
+            return JsonResponse(
+                {"status": "error", "message": "Wallet already exists"}, status=400
+            )
+
+        # Добавляем новый адрес
+        new_wallet_entry = {"wallet": wallet_address, "name": wallet_name}
+        wallets.append(new_wallet_entry)
+
+        save_wallets(wallets)
+
+        return JsonResponse(
+            {"status": "success", "message": "Wallet added", "wallet": new_wallet_entry}
+        )
+
+    return JsonResponse(
+        {"status": "error", "message": "Invalid request method"}, status=405
+    )
+
+
+def get_wallets(request):
+    return JsonResponse(load_wallets(), safe=False)
+
+
+def delete_wallet(request, index):
+    wallets = load_wallets()
+    try:
+        index = int(index)
+        if 0 <= index < len(wallets):
+            del wallets[index]
+            save_wallets(wallets)
+            return JsonResponse({"message": "Wallet deleted"})
+        else:
+            return JsonResponse({"error": "Error, please try again"}, status=400)
+    except ValueError:
+        return JsonResponse({"error": "Error, please try again"}, status=400)

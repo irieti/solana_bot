@@ -4,7 +4,7 @@
       "address": "B1G9pEB6V8TE4m8jeEJRsj8NXa9NGJgJgd4Z4auzdUnf",
       "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
       "owner": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
-      "amount": 480893379057299,
+      "amount": 510732162819041,
       "delegated_amount": 0,
       "frozen": false
     },
@@ -13,14 +13,6 @@
       "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
       "owner": "DYN5xhbBTZ9Jhi85qizTcAZtbx7AsuYvvt5LxekW8oAv",
       "amount": 293089044606034,
-      "delegated_amount": 0,
-      "frozen": false
-    },
-    {
-      "address": "D4LZd64FxnwiDbW57P4BGQ8sweWYDfnt9YFao8Vimogv",
-      "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
-      "owner": "HLd36zMuxj3Mh2iKtChYnuj8wU4eCU4RexFxhBfHNMDN",
-      "amount": 26048962821362,
       "delegated_amount": 0,
       "frozen": false
     },
@@ -153,26 +145,10 @@
       "frozen": false
     },
     {
-      "address": "8fK8u6uVcFJyUiP1DT4WAGZj3oKtf8nYG4QWwLwoTUP8",
-      "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
-      "owner": "3u2wZrHmgiaf1jA7EazXfXmuWjsxQCNAbAqkGraPBdJ5",
-      "amount": 2847985283788,
-      "delegated_amount": 0,
-      "frozen": false
-    },
-    {
       "address": "4zkmSp6nrNJrBd7ymxb4TaoThEnMsMHH9SN91UPASNsM",
       "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
       "owner": "6nLoMfd4evwSr9Py3vjdn5Wdd7LuuWASpWYRCvw8HdBJ",
       "amount": 2840140750533,
-      "delegated_amount": 0,
-      "frozen": false
-    },
-    {
-      "address": "FGU8Uw9eY4wDw4u7gGJDbmtwwjf5iT5qUyPVDbRjGKcJ",
-      "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
-      "owner": "7yfbMUsjQpavtrnbx5F8ABSfwjKjsAsjCBbkxrhTMub8",
-      "amount": 2840140750532,
       "delegated_amount": 0,
       "frozen": false
     },
@@ -221,6 +197,14 @@
       "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
       "owner": "BN9Fkie54u4D9QN9ZATXmkaHSQetB5ybiWwL5rq8ujht",
       "amount": 2131236457876,
+      "delegated_amount": 0,
+      "frozen": false
+    },
+    {
+      "address": "5i72kNMJFKoZTfr4W2oES6nvzxpGWAYtqpWKTP9mw75J",
+      "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
+      "owner": "43fK5sNZRddGgZfHHAGHnqn8Swywj34NiipKJNaJ9QPv",
+      "amount": 1981243169759,
       "delegated_amount": 0,
       "frozen": false
     },
@@ -321,18 +305,18 @@
       "frozen": false
     },
     {
-      "address": "5Erf6xMemLLYUjrYawBKbk8ymknmcYELbYzsqJUT64YM",
+      "address": "3oTKoia2JcGv3gNA77kMWxYGL6gjanYPvmeRqhnfPceg",
       "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
-      "owner": "9zabn9FdT5LJPYsb9q2D47cM8SuHfeD9pKEeSgX14g6t",
-      "amount": 1030913426088,
+      "owner": "45ruCyfdRkWpRNGEqWzjCiXRHkZs8WXCLQ67Pnpye7Hp",
+      "amount": 1034688478984,
       "delegated_amount": 0,
       "frozen": false
     },
     {
-      "address": "3oTKoia2JcGv3gNA77kMWxYGL6gjanYPvmeRqhnfPceg",
+      "address": "5Erf6xMemLLYUjrYawBKbk8ymknmcYELbYzsqJUT64YM",
       "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
-      "owner": "45ruCyfdRkWpRNGEqWzjCiXRHkZs8WXCLQ67Pnpye7Hp",
-      "amount": 1026509570328,
+      "owner": "9zabn9FdT5LJPYsb9q2D47cM8SuHfeD9pKEeSgX14g6t",
+      "amount": 1030913426088,
       "delegated_amount": 0,
       "frozen": false
     },
@@ -761,14 +745,6 @@
       "frozen": false
     },
     {
-      "address": "F2Ahj5asuCUf57Pm83KKcta5cRsPj6GfaVVtcAefeh5t",
-      "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
-      "owner": "DHdaJNZnTPRYZ1bhXc65xe3GEB4mcNYgtkNmJ2vbSvJ1",
-      "amount": 123953810880,
-      "delegated_amount": 0,
-      "frozen": false
-    },
-    {
       "address": "45XK8SzFWAu6rGYeZk74398x6wQswrJThfhCkVJSH49f",
       "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
       "owner": "CtXFh5EcED3hcBMHRDUsCEe24981athiPjPUivSR2oHH",
@@ -889,6 +865,14 @@
       "frozen": false
     },
     {
+      "address": "4jv6zvSEDub9ahaMUuCysSs1CbttvjSQD8HonVPXjBJr",
+      "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
+      "owner": "ZG98FUCjb8mJ824Gbs6RsgVmr1FhXb2oNiJHa2dwmPd",
+      "amount": 52981495358,
+      "delegated_amount": 0,
+      "frozen": false
+    },
+    {
       "address": "HoLsaeorAy2KiefvAdnUGpnLxgKmsuSkSoZmWH1xLaao",
       "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
       "owner": "7fwnKyXAuouH6u9xvqvsFWvxng4mwgoamE7D2DzBzsVq",
@@ -997,14 +981,6 @@
       "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
       "owner": "6KFVj2czLwNQeE4yBgFau6LHUS72vqgP11Sv1JUNxghz",
       "amount": 23013347808,
-      "delegated_amount": 0,
-      "frozen": false
-    },
-    {
-      "address": "4jv6zvSEDub9ahaMUuCysSs1CbttvjSQD8HonVPXjBJr",
-      "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
-      "owner": "ZG98FUCjb8mJ824Gbs6RsgVmr1FhXb2oNiJHa2dwmPd",
-      "amount": 21172894709,
       "delegated_amount": 0,
       "frozen": false
     },
@@ -1269,6 +1245,14 @@
       "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
       "owner": "GzhY5gkEdYEBmPfqssGPAqDd1qbQQNXPF3NMFfUfz5Es",
       "amount": 1075844179,
+      "delegated_amount": 0,
+      "frozen": false
+    },
+    {
+      "address": "2pwr8YDSb1CpRWFeSbEkYqCQhJqyn9wuZcWXpJLTFt4q",
+      "mint": "84Np1EXBmxbnqFJDekf6Pewaokz4Lz5B19sDLAV9FQr4",
+      "owner": "3CgvbiM3op4vjrrjH2zcrQUwsqh5veNVRjFCB9N6sRoD",
+      "amount": 1028225756,
       "delegated_amount": 0,
       "frozen": false
     },

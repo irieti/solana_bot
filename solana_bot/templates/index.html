@@ -1,83 +1,341 @@
-{% extends "base.html" %} {% block content %}
-<div class="container mx-auto p-4">
-    <h2 class="text-2xl font-bold mb-4">Token Tracker</h2>
+<!doctype html>
+<html>
+    <head>
+        <style>
+            body {
+                background: linear-gradient(to bottom, #0f0f1f, #1a1a3a);
+                color: #ffffff;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                    Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                min-height: 100vh;
+                margin: 0;
+                padding: 20px;
+            }
 
-    <form id="tracker-form" class="mb-6">
+            .dropdown {
+                position: relative;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
+
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: linear-gradient(to bottom, #0f0f1f, #1a1a3a);
+                min-width: 200px;
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+                border-radius: 5px;
+                padding: 10px;
+                list-style: none;
+                margin: 0;
+                max-height: 300px; /* Максимальная высота списка */
+                overflow-y: auto;
+                margin-bottom: 20px;
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            #wallet-dropdown {
+                margin-bottom: 20px;
+            }
+
+            .dropdown-content li {
+                padding: 8px;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .dropdown-content li:hover {
+                background: linear-gradient(to bottom, #0f1a2b, #1a1a3a);
+                border-radius: 8px;
+            }
+
+            .show {
+                display: block;
+                margin-bottom: 20px;
+            }
+
+            .delete-btn {
+                background: none;
+                border: none;
+                color: red;
+                cursor: pointer;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .log-item {
+                padding: 0.75rem;
+                border-radius: 0.25rem;
+                margin-bottom: 0.75rem;
+                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.5);
+                border-top: 0.5px solid #9ca3af;
+                border-bottom: 0.5px solid #9ca3af;
+            }
+
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+                margin: 30px 0;
+            }
+
+            .stat-card {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+                padding: 20px;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .title {
+                font-size: 2.5rem;
+                font-weight: 700;
+                background: linear-gradient(45deg, #f7931a, #ff9a44);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin-bottom: 30px;
+            }
+
+            input,
+            select {
+                width: 100%;
+                padding: 12px 16px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.05);
+                color: #ffffff;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
+
+            input:focus,
+            select:focus {
+                outline: none;
+                border-color: #f7931a;
+                box-shadow: 0 0 0 2px rgba(247, 147, 26, 0.2);
+            }
+
+            button {
+                background: linear-gradient(45deg, #f7931a, #ff9a44);
+                border: none;
+                border-radius: 8px;
+                color: white;
+                padding: 12px 24px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(247, 147, 26, 0.3);
+            }
+
+            .active-loops-list {
+                margin-top: 30px;
+            }
+
+            .loop-item {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 12px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .updates-container {
+                margin-top: 30px;
+            }
+
+            .update-card {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            /* Обновленные стили для форм */
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(
+                    3,
+                    1fr
+                ); /* Фиксированные 3 колонки */
+                gap: 40px; /* Увеличенный отступ между колонками */
+                margin-bottom: 30px;
+                align-items: end; /* Выравнивание элементов по нижнему краю */
+            }
+
+            /* Стили для второй формы */
+            #wallet-form {
+                grid-template-columns: repeat(3, 1fr); /* Такие же 3 колонки */
+                gap: 40px; /* Такой же отступ */
+            }
+
+            .label {
+                color: #999;
+                margin-bottom: 8px;
+                display: block;
+            }
+
+            .stop-button {
+                background: linear-gradient(45deg, #dc3545, #ff4757);
+            }
+
+            /* Add subtle animation to background */
+            @keyframes gradientBG {
+                0% {
+                    background-position: 0% 50%;
+                }
+                50% {
+                    background-position: 100% 50%;
+                }
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+
+            body {
+                background-size: 400% 400%;
+                animation: gradientBG 15s ease infinite;
+            }
+
+            /* Медиа-запрос для мобильных устройств */
+            @media (max-width: 768px) {
+                .form-grid,
+                #wallet-form {
+                    grid-template-columns: 1fr; /* На мобильных - одна колонка */
+                    gap: 20px; /* Меньший отступ на мобильных */
+                }
+            }
+        </style>
+    </head>
+    <body>
         {% csrf_token %}
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div>
-                <label for="mint-input" class="block mb-2">
-                    Token address:
-                </label>
-                <input
-                    type="text"
-                    id="mint-input"
-                    name="mint"
-                    placeholder="Enter token address"
-                    class="w-full p-2 border rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                    required
-                />
+        <div class="container">
+            <h1 class="title">Token Tracker</h1>
+
+            <form id="tracker-form">
+                <div class="form-grid">
+                    <div>
+                        <label class="label" for="mint-input">
+                            Token Address
+                        </label>
+                        <input
+                            type="text"
+                            id="mint-input"
+                            name="mint"
+                            placeholder="Enter token address"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label class="label" for="loop-time">
+                            Loop Interval
+                        </label>
+                        <select name="loop_time" id="loop-time">
+                            <option value="2">2 sec</option>
+                            <option value="3">3 sec</option>
+                            <option value="5">5 sec</option>
+                            <option value="10">10 sec</option>
+                            <option value="60">1 min</option>
+                            <option value="3600">1 hour</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label">&nbsp;</label>
+                        <button type="submit">Start Tracking</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Active Loops</h3>
+                    <div id="active-loops" class="active-loops-list">
+                        <div class="loop-item">Loading...</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Loop Updates</h3>
+                    <ul id="loop-updates" class="updates-container space-y-2">
+                        <li class="update-card text-gray-500">
+                            Waiting for updates...
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-            <div>
-                <label for="loop-time" class="block mb-2">Loop interval:</label>
-                <select
-                    name="loop_time"
-                    id="loop-time"
-                    class="w-full p-2 border rounded"
-                >
-                    <option value="2">2 sec</option>
-                    <option value="3">3 sec</option>
-                    <option value="5">5 sec</option>
-                    <option value="10">10 sec</option>
-                    <option value="60">1 min</option>
-                    <option value="3600">1 hour</option>
-                </select>
-            </div>
+            <form id="wallet-form" class="form-grid">
+                <div>
+                    <label class="label" for="wallet-input">
+                        Wallet Address
+                    </label>
+                    <input
+                        type="text"
+                        id="wallet-input"
+                        name="wallet"
+                        placeholder="Enter wallet address"
+                        required
+                    />
+                </div>
+                <div>
+                    <label class="label" for="name-input">Owner Name</label>
+                    <input
+                        type="text"
+                        id="name-input"
+                        name="name"
+                        placeholder="Enter owner name"
+                        required
+                    />
+                </div>
+                <div>
+                    <label class="label">&nbsp;</label>
+                    <button type="submit">Add Wallet</button>
+                </div>
+            </form>
 
-            <div class="flex items-end">
-                <button
-                    type="submit"
-                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                    Start Tracking
-                </button>
+            <div class="dropdown">
+                <button id="load-wallets">Load wallets</button>
+                <ul id="wallet-dropdown" class="dropdown-content"></ul>
             </div>
         </div>
-    </form>
 
-    <h3 class="text-xl font-bold mb-4">Active Loops</h3>
-    <ul id="active-loops" class="space-y-2">
-        <li class="text-gray-500">Loading...</li>
-    </ul>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('tracker-form');
+                const activeLoopsList = document.getElementById('active-loops');
 
-    <h3 class="text-xl font-bold mb-4">Loop Updates</h3>
-    <ul id="loop-updates" class="space-y-2">
-        <li class="text-gray-500">Waiting for updates...</li>
-    </ul>
-</div>
+                // Update active loops list
+                function updateActiveLoops() {
+                    fetch('/get-active-loops/')
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.loops.length === 0) {
+                                activeLoopsList.innerHTML =
+                                    '<li class="text-gray-500">No active loops</li>';
+                                return;
+                            }
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('tracker-form');
-        const activeLoopsList = document.getElementById('active-loops');
-
-        // Update active loops list
-        function updateActiveLoops() {
-            fetch('/get-active-loops/')
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.loops.length === 0) {
-                        activeLoopsList.innerHTML =
-                            '<li class="text-gray-500">No active loops</li>';
-                        return;
-                    }
-
-                    activeLoopsList.innerHTML = data.loops
-                        .map(
-                            (loop) => `
+                            activeLoopsList.innerHTML = data.loops
+                                .map(
+                                    (loop) => `
                     <li class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span>🔵 ${loop.mint} (${loop.loop_time} sec)</span>
+                        <span>🔵 ${loop.name} (${loop.loop_time} sec)</span>
                         <button 
                             onclick="stopLoop('${loop.mint}')" 
                             class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
@@ -86,124 +344,219 @@
                         </button>
                     </li>
                 `
-                        )
-                        .join('');
+                                )
+                                .join('');
+                        });
+                }
+
+                // Start loop
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const formData = {
+                        mint: document.getElementById('mint-input').value,
+                        loop_time: document.getElementById('loop-time').value,
+                    };
+
+                    fetch('/start-loop/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector(
+                                '[name=csrfmiddlewaretoken]'
+                            ).value,
+                        },
+                        body: JSON.stringify(formData),
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.status === 'success') {
+                                updateActiveLoops();
+                                form.reset(); // Clear the form after successful submission
+                            }
+                        });
                 });
-        }
 
-        // Start loop
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
+                // Stop loop
+                window.stopLoop = function (mint) {
+                    fetch('/stop-loop/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector(
+                                '[name=csrfmiddlewaretoken]'
+                            ).value,
+                        },
+                        body: JSON.stringify({ mint: mint }),
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.status === 'success') {
+                                updateActiveLoops();
+                            }
+                        });
+                };
 
-            const formData = {
-                mint: document.getElementById('mint-input').value,
-                loop_time: document.getElementById('loop-time').value,
-            };
+                // Update active loops every 0,5 seconds
+                setInterval(updateActiveLoops, 500);
+                updateActiveLoops();
+            });
 
-            fetch('/start-loop/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector(
-                        '[name=csrfmiddlewaretoken]'
-                    ).value,
-                },
-                body: JSON.stringify(formData),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.status === 'success') {
-                        updateActiveLoops();
-                        form.reset(); // Clear the form after successful submission
-                    }
-                });
-        });
+            document.addEventListener('DOMContentLoaded', function () {
+                const updatesContainer =
+                    document.getElementById('loop-updates');
 
-        // Stop loop
-        window.stopLoop = function (mint) {
-            fetch('/stop-loop/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector(
-                        '[name=csrfmiddlewaretoken]'
-                    ).value,
-                },
-                body: JSON.stringify({ mint: mint }),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.status === 'success') {
-                        updateActiveLoops();
-                    }
-                });
-        };
+                function fetchLoopUpdates() {
+                    fetch('/get-loop-updates/')
+                        .then((response) => response.json())
+                        .then((data) => {
+                            updatesContainer.innerHTML = ''; // Очищаем контейнер
 
-        // Update active loops every 5 seconds
-        setInterval(updateActiveLoops, 5000);
-        updateActiveLoops();
-    });
+                            if (
+                                !data.updates ||
+                                Object.keys(data.updates).length === 0
+                            ) {
+                                const emptyItem = document.createElement('li');
+                                emptyItem.className = 'text-gray-500';
+                                emptyItem.textContent =
+                                    'Waiting for updates...';
+                                updatesContainer.appendChild(emptyItem);
+                                return;
+                            }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const updatesContainer = document.getElementById('loop-updates');
+                            // Сортируем обновления по времени в порядке убывания (новые сверху)
+                            const sortedUpdates = Object.values(
+                                data.updates
+                            ).sort(
+                                (a, b) => new Date(b.time) - new Date(a.time) // Самые свежие изменения идут первыми
+                            );
 
-        function fetchLoopUpdates() {
-            fetch('/get-loop-updates/')
-                .then((response) => response.json())
-                .then((data) => {
-                    updatesContainer.innerHTML = ''; // Очищаем контейнер
-
-                    if (
-                        !data.updates ||
-                        Object.keys(data.updates).length === 0
-                    ) {
-                        const emptyItem = document.createElement('li');
-                        emptyItem.className = 'text-gray-500';
-                        emptyItem.textContent = 'Waiting for updates...';
-                        updatesContainer.appendChild(emptyItem);
-                        return;
-                    }
-
-                    Object.values(data.updates).forEach((update) => {
-                        const listItem = document.createElement('li');
-                        listItem.className =
-                            'p-3 bg-gray-100 rounded mb-3 shadow-sm';
-
-                        // Создаем HTML для элемента с улучшенным форматированием
-                        listItem.innerHTML = `
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="font-bold text-lg">${update.mint}</span>
-                                <span class="text-sm text-gray-600">${update.time}</span>
-                            </div>
-                            <div class="mb-2">
-                                <span class="text-sm font-medium">${update.reversed_balance_changes || ''}</span>
-                            </div>
-                            <div class="text-xl font-semibold mb-2">
+                            sortedUpdates.forEach((update) => {
+                                const listItem = document.createElement('li');
+                                listItem.className = 'log-item';
+                                listItem.innerHTML = `
+                                <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-lg">${update.mint}</span></br>
+                                <span class="text-sm text-gray-600">${update.time}</span></br>
+                                </div></br>
+                                <div class="mb-2">
+                                <span class="text-sm font-medium">${update.reversed_balance_changes || ''}</br></span>
+                                </br></div>
+                                <div class="text-xl font-semibold mb-2">
                                 ${update.sign}${update.formatted_total_amount}
-                            </div>
-                            <div class="text-sm text-gray-700 whitespace-pre-line">
+                                </div></br>
+                                <div class="text-sm text-gray-700 whitespace-pre-line">
                                 ${update.wallet_details}
-                            </div>
-                        `;
+                                </div></br>
+                                `;
 
-                        updatesContainer.appendChild(listItem);
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error fetching updates:', error);
-                    updatesContainer.innerHTML = `
-                        <li class="p-2 bg-red-100 text-red-700 rounded">
-                            Error loading updates. Retrying...
-                        </li>
-                    `;
+                                updatesContainer.appendChild(listItem);
+                            });
+                        })
+                        .catch((error) => {
+                            console.error('Error fetching updates:', error);
+                            updatesContainer.innerHTML = `
+                                <li class="p-2 bg-red-100 text-red-700 rounded">
+                                    Error loading updates. Retrying...
+                                </li>
+                            `;
+                        });
+                }
+
+                // Начальная загрузка
+                fetchLoopUpdates();
+
+                // Обновление каждую секунду
+                setInterval(fetchLoopUpdates, 1000);
+            });
+
+            document
+                .getElementById('wallet-form')
+                .addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const form = this;
+                    const formData = new FormData(form);
+
+                    fetch('/new-wallet/', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            alert('Success!'); // Показываем уведомление
+                            form.reset(); // Очищаем форму
+                        })
+                        .catch((error) => console.error('Error:', error));
                 });
-        }
 
-        // Начальная загрузка
-        fetchLoopUpdates();
+            document.addEventListener(
+                'DOMContentLoaded',
+                loadWalletsFromBackend
+            );
 
-        // Обновление каждую секунду
-        setInterval(fetchLoopUpdates, 1000);
-    });
-</script>
-{% endblock %}
+            // Открытие/закрытие списка
+            document
+                .getElementById('load-wallets')
+                .addEventListener('click', function () {
+                    document
+                        .getElementById('wallet-dropdown')
+                        .classList.toggle('show');
+                });
+
+            // Загрузка кошельков с бэкенда
+            function loadWalletsFromBackend() {
+                fetch('/get_wallets/')
+                    .then((response) => response.json())
+                    .then((data) => {
+                        updateWalletDropdown(data);
+                    })
+                    .catch((error) =>
+                        console.error('Ошибка загрузки кошельков:', error)
+                    );
+            }
+
+            // Обновление списка кошельков в выпадающем меню
+            function updateWalletDropdown(wallets) {
+                const dropdown = document.getElementById('wallet-dropdown');
+                dropdown.innerHTML = ''; // Очистка перед обновлением
+
+                wallets.forEach((walletObj, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <strong>${walletObj.name}</strong> <br>
+                        <small>${walletObj.wallet}</small>
+                        <button class="delete-btn" onclick="removeWallet(${index})">❌</button>
+                    `;
+                    dropdown.appendChild(li);
+                });
+            }
+
+            // Удаление кошелька
+            function removeWallet(index) {
+                fetch(`/delete_wallet/${index}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken(), // Защита от CSRF
+                    },
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        loadWalletsFromBackend(); // Перезагрузка списка после удаления
+                    })
+                    .catch((error) =>
+                        console.error('Ошибка удаления кошелька:', error)
+                    );
+            }
+
+            // Функция получения CSRF-токена (если используешь Django с CSRF-защитой)
+            function getCSRFToken() {
+                const cookieValue = document.cookie
+                    .split('; ')
+                    .find((row) => row.startsWith('csrftoken='))
+                    ?.split('=')[1];
+                return cookieValue || '';
+            }
+        </script>
+    </body>
+</html>

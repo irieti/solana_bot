@@ -26,4 +26,6 @@ urlpatterns = [
     path("stop-loop/", views.stop_loop, name="stop_loop"),
     path("get-active-loops/", views.get_active_loops, name="get_active_loops"),
     path("get-loop-updates/", views.get_loop_updates, name="get-loop-updates"),
+    path("new-wallet/", views.new_wallet, name="new-wallet"),
+    path("get_wallets/", views.get_wallets, name="get_wallets"),
 ]
