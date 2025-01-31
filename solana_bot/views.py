@@ -142,6 +142,7 @@ async def find_largest_holders(
     balance_changes = []
     reversed_balance_changes = []
     sign = ""
+    formatted_balance_changes = []
 
     while True:
         if stop_flag.is_set():
@@ -234,20 +235,19 @@ async def find_largest_holders(
 
         print(f"Total balance of matching wallets for mint {mint}: {total_amount}")
 
+        wallet_details_list = []
+
         for wallet in matching_wallets:
             wallet["name"] = wallets_dict.get(wallet["wallet"], "Unknown")
 
-        if token_decimals[mint] == 6:
-            wallet_amount = f"{((wallet['amount']/1000000) / 1000000000) * 100:,.4f}%"
-
-        elif token_decimals[mint] == 9:
+            divisor = 10**6 if token_decimals[mint] == 6 else 10**9
             wallet_amount = (
-                f"{((wallet['amount']/1000000000) / 1000000000) * 100:,.4f}%"
+                f"{((wallet['amount'] / divisor) / 1_000_000_000) * 100:,.4f}%"
             )
 
-        wallet_details = "\n".join(
-            [f"{wallet['name']}, {wallet_amount}" for wallet in matching_wallets]
-        )
+            wallet_details_list.append(f"{wallet['name']}, {wallet_amount}")
+
+        wallet_details = "<br>".join(wallet_details_list)
 
         if total_amount != previous_total_balance:
             if total_amount < previous_total_balance:
@@ -255,7 +255,7 @@ async def find_largest_holders(
                     mint=mint,
                     formatted_total_amount=formatted_total_amount,
                     wallet_details=wallet_details,
-                    reversed_balance_changes=reversed_balance_changes,
+                    formatted_balance_changes=formatted_balance_changes,
                     sign="🔴",
                 )
                 print(
@@ -271,6 +271,10 @@ async def find_largest_holders(
 
                 balance_changes.append(f"🔴 {formatted_previous_total_amount}%")
                 reversed_balance_changes = list(reversed(balance_changes))
+                formatted_balance_changes = "</br>".join(
+                    map(str, reversed_balance_changes)
+                )
+
             elif total_amount > previous_total_balance:
                 print(
                     f"Balance changed for mint {mint}! Previous total: {previous_total_balance}, New total: {formatted_total_amount}"
@@ -279,7 +283,7 @@ async def find_largest_holders(
                     mint=mint,
                     formatted_total_amount=formatted_total_amount,
                     wallet_details=wallet_details,
-                    reversed_balance_changes=reversed_balance_changes,
+                    formatted_balance_changes=formatted_balance_changes,
                     sign="🟢",
                 )
                 message = (
@@ -292,13 +296,16 @@ async def find_largest_holders(
 
                 balance_changes.append(f"🟢 {formatted_previous_total_amount}%")
                 reversed_balance_changes = list(reversed(balance_changes))
+                formatted_balance_changes = "</br>".join(
+                    map(str, reversed_balance_changes)
+                )
         else:
             print(f"Balance has not changed for mint {mint}.")
             update_balance(
                 mint=mint,
                 formatted_total_amount=formatted_total_amount,
                 wallet_details=wallet_details,
-                reversed_balance_changes=reversed_balance_changes,
+                formatted_balance_changes=formatted_balance_changes,
                 sign="⚪️",
             )
             message = (
@@ -310,6 +317,7 @@ async def find_largest_holders(
             )
             balance_changes.append(f"⚪️ {formatted_previous_total_amount}%")
             reversed_balance_changes = list(reversed(balance_changes))
+            formatted_balance_changes = "</br>".join(map(str, reversed_balance_changes))
 
         previous_total_balance = total_amount
         formatted_previous_total_amount = (
@@ -426,7 +434,7 @@ def update_balance(
     mint,
     formatted_total_amount,
     wallet_details,
-    reversed_balance_changes,
+    formatted_balance_changes,
     sign,
 ):
     try:
@@ -436,10 +444,11 @@ def update_balance(
         # Update the loop_updates dictionary
         loop_updates[mint] = {
             "time": cur_time,
-            "mint": token_name[mint],
+            "mint": str(mint)[:6],
+            "name": token_name[mint],
             "formatted_total_amount": formatted_total_amount,  # Ensure consistent type
             "wallet_details": str(wallet_details),  # Ensure string format
-            "reversed_balance_changes": reversed_balance_changes,
+            "formatted_balance_changes": formatted_balance_changes,
             "sign": sign,
         }
         print(f"{loop_updates}")
@@ -491,7 +500,12 @@ def stop_loop(request):
 @csrf_exempt
 def get_active_loops(request):
     loops = [
-        {"mint": mint, "loop_time": tracker.loop_time, "name": tracker.name}
+        {
+            "mint": mint,
+            "loop_time": tracker.loop_time,
+            "name": tracker.name,
+            "mint_part": str(mint)[:6],
+        }
         for mint, tracker in active_loops.items()
     ]
     return JsonResponse({"loops": loops})

@@ -335,9 +335,9 @@
                                 .map(
                                     (loop) => `
                     <li class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span>🔵 ${loop.name} (${loop.loop_time} sec)</span>
-                        <button 
-                            onclick="stopLoop('${loop.mint}')" 
+                        <span>🔵 ${loop.name} ${loop.mint_part} (${loop.loop_time} sec)</span>
+                        <button
+                            onclick="stopLoop('${loop.mint}')"
                             class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                         >
                             Stop
@@ -436,12 +436,11 @@
                                 listItem.className = 'log-item';
                                 listItem.innerHTML = `
                                 <div class="flex justify-between items-center mb-2">
-                                <span class="font-bold text-lg">${update.mint}</span></br>
+                                <span class="font-bold text-lg">${update.mint}  ${update.name}</span></br>
                                 <span class="text-sm text-gray-600">${update.time}</span></br>
                                 </div></br>
                                 <div class="mb-2">
-                                <span class="text-sm font-medium">${update.reversed_balance_changes || ''}</br></span>
-                                </br></div>
+                                <span class="text-sm font-medium">${update.formatted_balance_changes}</span></div></br>
                                 <div class="text-xl font-semibold mb-2">
                                 ${update.sign}${update.formatted_total_amount}
                                 </div></br>
