@@ -1,7 +1,7 @@
 [
     {
         "wallet": "RFSqPtn1JfavGiUD4HJsZyYXvZsycxf31hnYfbyG6iB",
-        "name": "0xf_sol"
+        "name": "Grand_Forgivable"
     },
     {
         "wallet": "52kPsnhTpjHZucGUQy4YDm8g9ykXPMC47iNVSVRscikb",
@@ -10,10 +10,6 @@
     {
         "wallet": "AbcX4XBm7DJ3i9p29i6sU8WLmiW4FWY5tiwB9D6UBbcE",
         "name": "404_flipped"
-    },
-    {
-        "wallet": "EaZhmFyajdQv8GoSTyd7F1aeg7VYGysWmfHuSo6u58JU",
-        "name": "Bliss_Achi"
     },
     {
         "wallet": "8deJ9xeUvXSJwicYptA9mHsU2rN2pDx37KWzkDkEXhU6",
@@ -257,15 +253,15 @@
     },
     {
         "wallet": "DwtF6KdjB9xgzKhCvcxKQLGU1NezdFFdVo8tLzSb7C8W",
-        "name": "🧩🧩🧩_sol"
+        "name": "\ud83e\udde9\ud83e\udde9\ud83e\udde9_sol"
     },
     {
         "wallet": "76fx1SGT35mqUfG5dcmpWS2gzLBr5AGrvMDEq144XPkJ",
-        "name": "🪽_sol"
+        "name": "\ud83e\udebd_sol"
     },
     {
         "wallet": "EDkv25Du3kZxStNyPNdDsG7mVs5Qt6VPoXc9LTzGwjwN",
-        "name": "阳光男孩_sol"
+        "name": "\u9633\u5149\u7537\u5b69_sol"
     },
     {
         "wallet": "4Bxf1mCFoaQmCxxB7obV4hjfYJqkCXVQVCTRkjT1YQuL",
@@ -382,10 +378,6 @@
     {
         "wallet": "6uxX41AkuekEgizRr4LdyNcVHc2P4ZcKHVyZ7W7o4whh",
         "name": "Agate_6uxX"
-    },
-    {
-        "wallet": "78EwH3tiir7azRu9Fyn6xiZojmxb9qbUY4xsR4BvtkBj",
-        "name": "Agate_78Ew"
     },
     {
         "wallet": "78Feb5xcsTQN9UAmohEkPup9k59RknWLX7rd2a88MW7p",
@@ -781,7 +773,7 @@
     },
     {
         "wallet": "Ay9wnuZCRTceZJuRpGZnuwYZuWdsviM4cMiCwFoSQiPH",
-        "name": "KOL_冷静"
+        "name": "KOL_\u51b7\u9759"
     },
     {
         "wallet": "7VBTpiiEjkwRbRGHJFUz6o5fWuhPFtAmy8JGhNqwHNnn",
@@ -940,10 +932,6 @@
         "name": "Recent_ApXW"
     },
     {
-        "wallet": "FJiSfDpeLPq8fnNRTm5oX4MeCek63CVbwZtWFb7zA7bo",
-        "name": "Recent_FJiS"
-    },
-    {
         "wallet": "Gy7HEYKT2NyxKT2Rn79Tvp8nVGJxtgB7uYKtyL3nLMV6",
         "name": "Recent_Gy7H"
     },
@@ -966,10 +954,6 @@
     {
         "wallet": "5eEmdFMxZboZGkWVWfu7joRKHYM5Ur6oASzqouAuqd6n",
         "name": "Smart_5eEm"
-    },
-    {
-        "wallet": "6c7CWNCSKvPMAbwZujh9b4Wf4yB6JehqSKncgXV6BE5T",
-        "name": "Smart_6c7C"
     },
     {
         "wallet": "6F4FaM4DiG5aJYMRz1uT9aiAQPbc8zgQpbaxKzz3T1Yc",
@@ -1208,20 +1192,8 @@
         "name": "Tsubasa"
     },
     {
-        "wallet": "DNPCLwo9egtCLyhjy6DZb2hzjDVsF8vKSLFc3JZxKSCN",
-        "name": "Very_recent_but_good_1"
-    },
-    {
-        "wallet": "7oA2Hbn1LVPTDV1HxbDZVRhiF6kp7VMQhoLZVtMAv5gN",
-        "name": "Very_recent_but_good_2"
-    },
-    {
         "wallet": "EPi6pYo9kDvwoqcc5S5ok8oj1LEB3n3Zfns64u1CA4mS",
         "name": "waityourturn_sol"
-    },
-    {
-        "wallet": "14RirxpUNxdTSu3eABbf3eVzX4vkPJAdfiJWcqhjEk4t",
-        "name": "Whale_14Ri"
     },
     {
         "wallet": "22Nfr9Xw6FVGrV49KQMNGU5v52APkbyNK9MLn9gXBpPt",
@@ -1234,10 +1206,6 @@
     {
         "wallet": "26ofYa1jACFCLsckB17YESqcfiHGv2K6jRTsmoxj1GAp",
         "name": "Whale_26of"
-    },
-    {
-        "wallet": "29FSgZnQG4dfDHa1R6KWroVAgcZSLnZ5RmqDuSLdLgRd",
-        "name": "Whale_29FS"
     },
     {
         "wallet": "2A9jtVhMh6tF9cGZ2FXEDCP7rSDXgeeQrL1RzTs81wFC",
@@ -1284,10 +1252,6 @@
         "name": "Whale_2m7c"
     },
     {
-        "wallet": "2mN75to4xVzYPhh2o81HNpE6dvU4Eb7fBVrAZDZ8MbUs",
-        "name": "Whale_2mN7"
-    },
-    {
         "wallet": "2Mvda5GZs4exuYQcmpmuZgv8qdATX7y2PXoUUTW29gZS",
         "name": "Whale_2Mvd"
     },
@@ -1328,10 +1292,6 @@
         "name": "Whale_3FQu"
     },
     {
-        "wallet": "3hHPW9b9eFxEmTAtCjfnMG77n8vCFqWiDDZkjKKdn3TA",
-        "name": "Whale_3hHP"
-    },
-    {
         "wallet": "3jPxYCDb37W17d8eqZ7E7KPc7pi3AaxTXRapnSvE4DPV",
         "name": "Whale_3jPx"
     },
@@ -1348,10 +1308,6 @@
         "name": "Whale_3QLV"
     },
     {
-        "wallet": "3TSZ2oVyfPpGptbzTjotbrNqLnErhNSXRXt8fTtBAATg",
-        "name": "Whale_3TSZ"
-    },
-    {
         "wallet": "3WCAd1Ytzp5h3GPur4phdbQinKYNK6DPWoswWif66DTu",
         "name": "Whale_3WCA"
     },
@@ -1362,10 +1318,6 @@
     {
         "wallet": "41FrLCxbeg3xyEAfxNbZrXStcH6znz6o4bheZgRoVYrN",
         "name": "Whale_41Fr"
-    },
-    {
-        "wallet": "41pDXcVawfJ9xcHdfyBKALow26a4Newa8AfX3h5Pj1e3",
-        "name": "Whale_41pD"
     },
     {
         "wallet": "42KT1JSVjhDVNjxRVvCbRHDuD4tkJhWx1c9dkFGucz9t",
@@ -1452,10 +1404,6 @@
         "name": "Whale_5EE8"
     },
     {
-        "wallet": "5F9ZNtSoKUFPR35AKfCHPqyA4K17xQ3E3U6Sk9fiheH5",
-        "name": "Whale_5F9Z"
-    },
-    {
         "wallet": "5fGk4fEvrvxQxzYTX1zDKkLdp6JKscAy41UQBRivDiCd",
         "name": "Whale_5fGk"
     },
@@ -1478,10 +1426,6 @@
     {
         "wallet": "5mHAf3m4gs2v5web3FVHYK3o8Nk7V4ryWJd6Un2C3QNi",
         "name": "Whale_5mHA"
-    },
-    {
-        "wallet": "5NdoWHozBBdC2fLcNQj5PvyrSe8Y3D2S71bHM9xGtq6t",
-        "name": "Whale_5Ndo"
     },
     {
         "wallet": "5Qar6dwzrjKWSXaUZwKNNwv7xuBYMojNwBrZPF7nqK1o",
@@ -1632,10 +1576,6 @@
         "name": "Whale_814Y"
     },
     {
-        "wallet": "84GhtnU5ezBKv1jQ3SCoC5LXiZ1fpjULeRRD6RRJSphc",
-        "name": "Whale_84Gh"
-    },
-    {
         "wallet": "85pLpaUF2R9SDkGYUMc69gcfo4Xa8GzUwKVg68A6UFoq",
         "name": "Whale_85pL"
     },
@@ -1672,10 +1612,6 @@
         "name": "Whale_8og9"
     },
     {
-        "wallet": "8Ph15WkfmxBcqJkhAt1cek7ywkZxH76S6HB2oGjhWfum",
-        "name": "Whale_8Ph1"
-    },
-    {
         "wallet": "8qEPKkkAcnbRNEMBzsnbh25krAaqREYNGV6QWZj6hMYP",
         "name": "Whale_8qEP"
     },
@@ -1706,10 +1642,6 @@
     {
         "wallet": "9eBTTDjNTS1AKYzzVRjp8WUfds25zeenAPEnv4DicPW1",
         "name": "Whale_9eBT"
-    },
-    {
-        "wallet": "9fd27TdZ8bcxTCaZMTzvm4oUvDspHk8o9BQ64AhbbQAK",
-        "name": "Whale_9fd2"
     },
     {
         "wallet": "9grBtCAC463PEFrSJqQGEWTNGfKdqfmmWF7JRhKJNHwe",
@@ -1808,10 +1740,6 @@
         "name": "Whale_ANqw"
     },
     {
-        "wallet": "AoTTvvyQwEwg97UfhL8Cm36h62aT5hBREFiqVcrzooa4",
-        "name": "Whale_AoTT"
-    },
-    {
         "wallet": "ApT9X6oomqLUYmmZKWatwjzjt3J68Hrbg9X85yhqwZDz",
         "name": "Whale_ApT9"
     },
@@ -1870,10 +1798,6 @@
     {
         "wallet": "BgUK1zR9woiRM1Nz5s8qfXEfx3DTpPu6z4ZBTQ3dXm6C",
         "name": "Whale_BgUK"
-    },
-    {
-        "wallet": "BhFysbdw1Ty14vVd5CXYg4qzxTK7onughgk2q8c39i5e",
-        "name": "Whale_BhFy"
     },
     {
         "wallet": "BhP6CMpoBt76j17Z2Ne2asv9Qm3RBjYAy17Fe6AAXgYW",
@@ -1954,10 +1878,6 @@
     {
         "wallet": "CtcdyHpLXnaoaVS5V6uEgEZ5H2d9egkEqeWrABjkbaKk",
         "name": "Whale_Ctcd"
-    },
-    {
-        "wallet": "CW8wS51zx1PCS4gBzKDZQTk7wcny7BG4k5DiwPVHa4xq",
-        "name": "Whale_CW8w"
     },
     {
         "wallet": "Cx2ZA985Uz6XAb19iyCF5uSuPomPgXJDXE2d2cu46VRe",
@@ -2084,10 +2004,6 @@
         "name": "Whale_Ehqd"
     },
     {
-        "wallet": "EMnTdtWoaQqSXk4cZaQoPBtJpq7uEMLX7Jv2sQFMTvby",
-        "name": "Whale_EMnT"
-    },
-    {
         "wallet": "EnQLCLB7NWojruXXNopgH7jhkwoHihTpuzsrtsM2UCSe",
         "name": "Whale_EnQL"
     },
@@ -2118,10 +2034,6 @@
     {
         "wallet": "EwXzNGjaDR887Y9v4wP5VR4gJyrodrMwF9XaZZ4eB3cV",
         "name": "Whale_EwXz"
-    },
-    {
-        "wallet": "Ex5UkpSmcS3zaGyYsv1GFcuRah5U8zvPxp9NBC4KCuVB",
-        "name": "Whale_Ex5U"
     },
     {
         "wallet": "ExsNiyJdxH6YPZtmrPk8SjGnBH3ceBRiGDyXXzJHopjX",
@@ -2194,10 +2106,6 @@
     {
         "wallet": "GJthPDTPkhvp3q9VqrXeJxeMxYwk6Kazf2rfkVAXasGQ",
         "name": "Whale_GJth"
-    },
-    {
-        "wallet": "GMUicnLjnZ6uaYbESyyRQ8uBe2vjYgYnjJrWJrqeUiYe",
-        "name": "Whale_GMUi"
     },
     {
         "wallet": "GNokty6geQYPJEhQKLrW5t6PrfKvpT1Fnnzr4aQAXkB",
@@ -2326,10 +2234,6 @@
     {
         "wallet": "JCpyGRPFrX3kYv7kkP9SPRgCbdN88us1v6fKY2gGrU66",
         "name": "Whale_JCpy"
-    },
-    {
-        "wallet": "jHahokjkJtFw5su4TKKCtB8HGCiNYmvTYs2fvwZEsZC",
-        "name": "Whale_jHah"
     },
     {
         "wallet": "JqyVnwzk4m5oM3Mme1tw3BHmLkZ4aqNSZyD6cMfMEF9",
@@ -2540,10 +2444,6 @@
         "name": "Whale_4aDd"
     },
     {
-        "wallet": "4BpJ7tZGr2Nm6iKA9MPJ6vfnJmkoLa24keaGpuMWeXpE",
-        "name": "Whale_4BpJ"
-    },
-    {
         "wallet": "4fxpWbsubzCYqHvQFtAGETa4zqm1PZeqq8TVUCUnhmeJ",
         "name": "Whale_4fxp"
     },
@@ -2644,20 +2544,12 @@
         "name": "Whale_65jT"
     },
     {
-        "wallet": "68TWGYLqKqDPtt8cWQ3bvSi3WsmF7oJj7R9g3F8fce2j",
-        "name": "Whale_68TW"
-    },
-    {
         "wallet": "6b17BFoRWxvupScMyoXHYjovt1PbAryEKAdAsCkLhJq4",
         "name": "Whale_6b17"
     },
     {
         "wallet": "6BT3xM3eNVKcCXsQBjkZcNUgxtGn8JH8ZjPa5RrAC7vd",
         "name": "Whale_6BT3"
-    },
-    {
-        "wallet": "6DkohMBgBjeZbFaoeTUvmqs5kTYLt1SphaVjX2oeAz2y",
-        "name": "Whale_6Dko"
     },
     {
         "wallet": "6KVyzB7Sxx2Rnk7J8ZEhBZPbKyiRq3tPY9YNhtCjcems",
@@ -2748,10 +2640,6 @@
         "name": "Whale_7RsP"
     },
     {
-        "wallet": "7S53NPdeST9UxK822zNTNsXckT8qSVqTsCz5KHweoPMk",
-        "name": "Whale_7S53"
-    },
-    {
         "wallet": "7SmhQ9r2TLLgS5cmWoFSVGZZw7sEySmZXzwBVscrc7qb",
         "name": "Whale_7Smh"
     },
@@ -2818,10 +2706,6 @@
     {
         "wallet": "8uHmqrw3nydKUxEpBuZUCuzowhrZ1SytjCCNXAvEaL6f",
         "name": "Whale_8uHm"
-    },
-    {
-        "wallet": "8zMdhSMtycyeTkTWA1ECuZgGBi8fNKZEgpVR2zAc7J15",
-        "name": "Whale_8zMd"
     },
     {
         "wallet": "919XbhTZm55pQgRRLLPTxsSQwwctpuwFeqEdZybP3mha",
@@ -2936,10 +2820,6 @@
         "name": "Whale_Avc4"
     },
     {
-        "wallet": "Awnnxth8BTzHNPKsNpeiQ9B6i9p4syt2ZVs2Ti42UrSG",
-        "name": "Whale_Awnn"
-    },
-    {
         "wallet": "AWrhxzan5kks8hYfAtujB4Ujqhgt12GuvqyMrwDApdqy",
         "name": "Whale_AWrh"
     },
@@ -3042,10 +2922,6 @@
     {
         "wallet": "C3nLTNMK6Ao1s3J1CQhv8GbT3NoMmifWoi9PGEcYd9hP",
         "name": "Whale_C3nL"
-    },
-    {
-        "wallet": "CA67YjRqM1NrsnrF32tzDJRJu2pnx7RenbWKX7kNHr3y",
-        "name": "Whale_CA67"
     },
     {
         "wallet": "CappSyR39LAweesyTgAysYvf3DVWuRLvaEqvmuCvP93J",
@@ -3208,10 +3084,6 @@
         "name": "Whale_E5y5"
     },
     {
-        "wallet": "E7SBReuD9Lfk8RC3xP3xaHtxdbydmTPXnE3eAiqcohUx",
-        "name": "Whale_E7SB"
-    },
-    {
         "wallet": "EbNr5s54pCUFzEyBDjJWwqYQc7R5E8udmPEpDLwpbjKq",
         "name": "Whale_EbNr"
     },
@@ -3352,16 +3224,8 @@
         "name": "Whale_G2up"
     },
     {
-        "wallet": "GaGujQdJPbyGJRFvNpYGBFJQ6Zsx5tZtN16BhiTwB6mx",
-        "name": "Whale_GaGu"
-    },
-    {
         "wallet": "GednEH4dgpdvTdUgDNHg4BAHLa5KPQojbcHSF6eg38JB",
         "name": "Whale_Gedn"
-    },
-    {
-        "wallet": "GF4At4Jr9q1wTYTmvSZtMP7PTVFqn58Bi5kXLLiWpspB",
-        "name": "Whale_GF4A"
     },
     {
         "wallet": "Gfm13uTq94whEuskgPTBmeVbSVVHZ1eMu46CBkKwT7q",
@@ -3374,10 +3238,6 @@
     {
         "wallet": "GgG65z3MXpmGnV3ZapKv5ayDqox1x7CJnqP1LD8FaZdt",
         "name": "Whale_GgG6"
-    },
-    {
-        "wallet": "GiFZNo2YFrnRP1iJM2hnVgBZ8ACw5fHVCtMfAfxmY5QZ",
-        "name": "Whale_GiFZ"
     },
     {
         "wallet": "GkdjQmHsoXzDJTCzZgJBdVhAcK3KMpXxvb2YbZGqrYwx",
@@ -3402,10 +3262,6 @@
     {
         "wallet": "GUT2KtprxxgmRERjJhd11y8W6EPD9YDyyU9CaMVTXxKY",
         "name": "Whale_GUT2"
-    },
-    {
-        "wallet": "GuvEZ8tDqHJn8DCyECCT3HXdEEzMFgsbihZPrYRSzLwd",
-        "name": "Whale_GuvE"
     },
     {
         "wallet": "GVjYGNde2aRzd5wGPbRvCpSPpZVYPZQiu1GuYmEYxqkX",
@@ -3462,10 +3318,6 @@
     {
         "wallet": "HooderpigTVYapoXi6PQzxwtWhq3U1cuGvyu89fGjruY",
         "name": "Whale_Hood"
-    },
-    {
-        "wallet": "HP8cHZFYBmWoKG22isbCPcQGDoMK976afaWjvQm15Nb4",
-        "name": "Whale_HP8c"
     },
     {
         "wallet": "HPrUZvMH3cbJBQB9dWyaXM7cLErriBgSYC49L2iAVFBR",
@@ -3637,7 +3489,7 @@
     },
     {
         "wallet": "9xeabvRGYoETTi5xM2gJVpKw2SUoGcvJZg3uKtgZdFAa",
-        "name": "不要放弃_sol"
+        "name": "\u4e0d\u8981\u653e\u5f03_sol"
     },
     {
         "wallet": "DB4KKENiuFbmDpvXtr1X7a2rJgo2cEBg2QQjZzuTpVXx",
@@ -3868,10 +3720,6 @@
         "name": "Latuche"
     },
     {
-        "wallet": "EacSoHxke8JBLmWtLgxtNKz25NohEpBXNW1DPzLHpump",
-        "name": "hongkongfnf_sol"
-    },
-    {
         "wallet": "FYj7zcsDv9TMvnkNno4Nvm8yHSwvBaDxebVZUiFftRAy",
         "name": "hongkongfnf_sol_2"
     },
@@ -4062,5 +3910,181 @@
     {
         "wallet": "F2pmrUchaCWys2G5XDpAAdd1wKPcrBkbQWCTAWwTAJ7B",
         "name": "DISCOVER_85"
+    },
+    {
+        "wallet": "3TFxyk733LLjsNdEQvZ5ZhgsgwT5JdfgnSEdVKJH2cfA",
+        "name": "vietnamesekid_sol"
+    },
+    {
+        "wallet": "DE3MrQLrz4mH7uWvmeHdLtD38vpFjJEzoUQSBcBPWbsv",
+        "name": "DISCOVER_86"
+    },
+    {
+        "wallet": "GVyyMNbjc9HzaXcgyxGacfEXUDnTw8qqygFd6kw4BWNS",
+        "name": "Euphoria_Clouded"
+    },
+    {
+        "wallet": "F72vY99ihQsYwqEDCfz7igKXA5me6vN2zqVsVUTpw6qL",
+        "name": "Jalen"
+    },
+    {
+        "wallet": "BCnqsPEtA1TkgednYEebRpkmwFRJDCjMQcKZMMtEdArc",
+        "name": "Kreo"
+    },
+    {
+        "wallet": "HeZh2UFKh3JGMMCcCcr1H7uGnBvabG6kT2WMeR6Fdfto",
+        "name": "ENRON_1"
+    },
+    {
+        "wallet": "3kR2N39md15orJN25TQvQmcFbk5E78DVYB2TcHc5Jnjy",
+        "name": "ENRON_2"
+    },
+    {
+        "wallet": "AakLPHtDYV6JVQYW8558cDXtWHpAhHNJYpsH88xw7YyD",
+        "name": "ENRON_3"
+    },
+    {
+        "wallet": "FDqcVgYRdRRPsNV1eNyUrdnqKFtrQu5wkWAvjD8wySVd",
+        "name": "ENRON_4"
+    },
+    {
+        "wallet": "6F3mUDZ9GoRJrL87EA16oEJ7fzTbXiQP9kLBhCfHU62d",
+        "name": "ENRON_5"
+    },
+    {
+        "wallet": "H1zyPmkVAcfgXE3oKLz8pMW1j4ThuhJ4nZiMQiA5tWER",
+        "name": "ENRON_6"
+    },
+    {
+        "wallet": "G3NyToZikM6jp82sCJZdUzFPu7LSJEgCrM3EweopAiJp",
+        "name": "ENRON_7"
+    },
+    {
+        "wallet": "4gGeZN6tbALYSUpMdc2Bsnj8ciA6eVRzJPBBcxKUYyj3",
+        "name": "ENRON_8"
+    },
+    {
+        "wallet": "578ZFJoH75jkPCVupRvwZAzbVHVMbKL4P7MKuG9iWEtH",
+        "name": "ENRON_9"
+    },
+    {
+        "wallet": "GdhR3Cw6bbtpkqY8yugXBssnAc8dAH4iH8KExZsrmS5C",
+        "name": "ENRON_10"
+    },
+    {
+        "wallet": "8uixZSVHV4duRVBtXHknhQmqVndxwLrwTZvzZZv4oVV",
+        "name": "ENRON_11"
+    },
+    {
+        "wallet": "4v5pJbcJrjVhBM3QQpB3vpp3FEXccbTeHYGgnTsSke9x",
+        "name": "ENRON_12"
+    },
+    {
+        "wallet": "AZ5u3JSCAyBxHZ3WSi5CFmE38cJ3iP4gBrwDhaHMJiYp",
+        "name": "ENRON_13"
+    },
+    {
+        "wallet": "8k3py8pcD2Aw4tqVZkybtXAT6bREmtuLqUA4oyKr9S1L",
+        "name": "ENRON_14"
+    },
+    {
+        "wallet": "CueDkwDYr8ZXRwMseprUpCqsz1Zj1VgLnZNRFyQHkfwZ",
+        "name": "ENRON_15"
+    },
+    {
+        "wallet": "BGUDFUmdFDoGRdQtk7oaxBf2emrHM5hPUPkhPZWdHrMU",
+        "name": "ENRON_16"
+    },
+    {
+        "wallet": "4CqecFud362LKgALvChyhj6276he3Sy8yKim1uvFNV1m",
+        "name": "romewasntbuiltinaday_sol"
+    },
+    {
+        "wallet": "oH8tg1q1xaFVPRUsuAsRYvK6YxNhjqkyX5vjao8TZBn",
+        "name": "ENRON_17"
+    },
+    {
+        "wallet": "7DvKL6oAMB8eSYknE2R8tAnxFao9CUZeEAnqQdAdjUtX",
+        "name": "ENRON_18"
+    },
+    {
+        "wallet": "A5b1G3FRp4cge8HkKJCp3qtF73WQtxHFLpDQokKnP7ba",
+        "name": "ENRON_19"
+    },
+    {
+        "wallet": "GCS7EMmWD2TiibKGJFp6L85yUgjsA7jgK72Q1U5gDotV",
+        "name": "ENRON_20"
+    },
+    {
+        "wallet": "62ayF35G8NvnwFKWRNkMvypsVMyar6FG8S66x4T2FmFr",
+        "name": "dumbnigger_sol"
+    },
+    {
+        "wallet": "J2B5fnm2DAAUAGa4EaegwQFoYaN6B5FerGA5sjtQoaGM",
+        "name": "Dan176"
+    },
+    {
+        "wallet": "SU64S8dvbrCFLjyThDAxMFEgkV2gLuHRjg7jqFMJkvS",
+        "name": "360n0scope_sol"
+    },
+    {
+        "wallet": "Gmh3Wt423pU6GsS3FQyZjknifnAFW7g3J8HhbF2TrbZL",
+        "name": "yeooo_sol"
+    },
+    {
+        "wallet": "2N3Xo1iv5DjmjW6kBgdQ6zCmVGGCAiTqPUEDLMn2mfib",
+        "name": "Akastsuki_1_?"
+    },
+    {
+        "wallet": "86AArCufuDZ1bUYjjdfAbDLM7HFdkeeMhTbsEeEHXQAR",
+        "name": "underwaterbeachball_sol"
+    },
+    {
+        "wallet": "2ehPA8DSamWyw1MdPCjC4RMNjarRvptm1B9wwbuyaFym",
+        "name": "damocles_sol"
+    },
+    {
+        "wallet": "9UbBoNWU5UA2h2uScAisxurifDLGyQs6bLEc5jnrEMPz",
+        "name": "thxforsupply_sol"
+    },
+    {
+        "wallet": "3bgabZ8p7jYRioeLCnX8mdQsPZM1uPctoStL8XgeRanM",
+        "name": "zachvierr_sol"
+    },
+    {
+        "wallet": "A5CFMGAGx9TCHSqTmCfLnxHTkSaV877xhKeHMgsfhjGo",
+        "name": "9figz_sol"
+    },
+    {
+        "wallet": "8Qiy6x2xNxaPLzGqM3W2ZdZvkYhTZCojsWQD1Jr56Vvp",
+        "name": "furfur_sol"
+    },
+    {
+        "wallet": "H87Hk58orfNgTc7st5nxcJmMfLPpLpRHRxK4cnJk8wBY",
+        "name": "Vanguard_Miki"
+    },
+    {
+        "wallet": "FNPTyA6ACUvbsrE4Je87kuxGLzgAzNDa5fsNqFN3RS3L",
+        "name": "SYMBOLIC_1"
+    },
+    {
+        "wallet": "6YiKzKuudaWH4C6nLQWRRM95djpLVD9QYHuT2Kge23Gh",
+        "name": "SYMBOLIC_2"
+    },
+    {
+        "wallet": "9CfCokYkkH36typjd6TZabyfTjFNbymvwgsLGHbDPc4b",
+        "name": "SYMBOLIC_3"
+    },
+    {
+        "wallet": "4QuwcA8W8B6RNU2nnhVC9zDbBGrFRTyAznHLaVYVWXkw",
+        "name": "SYMBOLIC_4"
+    },
+    {
+        "wallet": "AmNB47W2bLkNaTQpYXnfkYbQp9H2ihzs74Q18Kmkb5Vp",
+        "name": "JET_1"
+    },
+    {
+        "wallet": "9zzuxdJDxsSduovJ5g9jg9u6SSo5AsNdDhL3j8bb4BMh",
+        "name": "JET_2"
     }
 ]
