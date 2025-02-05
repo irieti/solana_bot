@@ -70,7 +70,7 @@ def save_largest_accounts(data, mint_address):
 
 
 async def fetch_page_with_retry(session, page, semaphore, mint):
-    max_retries = 5
+    max_retries = 3
     base_delay = 1
 
     for attempt in range(max_retries):
@@ -89,7 +89,7 @@ async def fetch_page_with_retry(session, page, semaphore, mint):
 
                 async with session.post(url, json=payload) as response:
                     if response.status == 429:
-                        delay = 0.01
+                        delay = 0.1
                         print(
                             f"Rate limited on page {page}, attempt {attempt + 1}. Waiting {delay:.2f}s"
                         )
@@ -104,7 +104,6 @@ async def fetch_page_with_retry(session, page, semaphore, mint):
                     token_accounts = data.get("result", {}).get("token_accounts", [])
 
                     if not token_accounts:
-                        print(f"No more accounts found at page {page}")
                         return []
 
                     print(f"Successfully fetched page {page}")
@@ -244,13 +243,14 @@ async def find_largest_holders(
 
         if total_amount != previous_total_balance:
             if total_amount < previous_total_balance:
+                sign = "🔴"
                 update_balance(
                     mint=mint,
                     formatted_total_amount=formatted_total_amount,
                     num_matching_wallets=num_matching_wallets,
                     wallet_details=wallet_details,
                     formatted_balance_changes=formatted_balance_changes,
-                    sign="🔴",
+                    sign=sign,
                 )
                 print(
                     f"Balance changed for mint {mint}! Previous total: {previous_total_balance}, New total: {total_amount}"
@@ -263,7 +263,9 @@ async def find_largest_holders(
                     f"{wallet_details}"
                 )
 
-                balance_changes.append(f"🔴 {formatted_previous_total_amount}%")
+                balance_changes.append(
+                    f"{num_matching_wallets} {sign} {formatted_previous_total_amount}%"
+                )
                 reversed_balance_changes = list(reversed(balance_changes))
                 formatted_balance_changes = "</br>".join(
                     map(str, reversed_balance_changes)
@@ -273,13 +275,14 @@ async def find_largest_holders(
                 print(
                     f"Balance changed for mint {mint}! Previous total: {previous_total_balance}, New total: {formatted_total_amount}"
                 )
+                sign = "🟢"
                 update_balance(
                     mint=mint,
                     formatted_total_amount=formatted_total_amount,
                     num_matching_wallets=num_matching_wallets,
                     wallet_details=wallet_details,
                     formatted_balance_changes=formatted_balance_changes,
-                    sign="🟢",
+                    sign=sign,
                 )
                 message = (
                     f"{cur_time}\n"
@@ -289,20 +292,23 @@ async def find_largest_holders(
                     f"{wallet_details}"
                 )
 
-                balance_changes.append(f"🟢 {formatted_previous_total_amount}%")
+                balance_changes.append(
+                    f"{num_matching_wallets} {sign} {formatted_previous_total_amount}%"
+                )
                 reversed_balance_changes = list(reversed(balance_changes))
                 formatted_balance_changes = "</br>".join(
                     map(str, reversed_balance_changes)
                 )
         else:
             print(f"Balance has not changed for mint {mint}.")
+            sign = "⚪️"
             update_balance(
                 mint=mint,
                 formatted_total_amount=formatted_total_amount,
                 num_matching_wallets=num_matching_wallets,
                 wallet_details=wallet_details,
                 formatted_balance_changes=formatted_balance_changes,
-                sign="⚪️",
+                sign=sign,
             )
             message = (
                 f"{cur_time}\n"
@@ -311,7 +317,9 @@ async def find_largest_holders(
                 f"<b>🟠 {formatted_total_amount}</b>\n"
                 f"{wallet_details}"
             )
-            balance_changes.append(f"⚪️ {formatted_previous_total_amount}%")
+            balance_changes.append(
+                f"{num_matching_wallets} {sign} {formatted_previous_total_amount}%"
+            )
             reversed_balance_changes = list(reversed(balance_changes))
             formatted_balance_changes = "</br>".join(map(str, reversed_balance_changes))
 
