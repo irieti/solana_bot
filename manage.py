@@ -3,6 +3,8 @@
 import os
 import sys
 
+os.environ["RUN_MAIN"] = "true"
+
 
 def main():
     """Run administrative tasks."""

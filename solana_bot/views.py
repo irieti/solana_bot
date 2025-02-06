@@ -15,13 +15,29 @@ import time
 import os
 from dotenv import load_dotenv
 import random
-
+from telegram import Update
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    filters,
+    CallbackContext,
+)
+from django.views import View
+from telegram import Update
+from telegram import Bot, Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
+import logging
+import traceback
+import re
 
 load_dotenv()
 
 # Configuration
 url = os.getenv("URL_API")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TOKEN = os.getenv("TOKEN")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 chat_ids_str = os.getenv("chat_ids")
 if chat_ids_str:
     chat_ids = [int(id.strip()) for id in chat_ids_str.split(",")]
@@ -35,6 +51,52 @@ loop_statuses = defaultdict(lambda: False)
 loop_updates = {}
 token_name = {}
 token_decimals = {}
+
+bot = Bot(token=TOKEN)
+
+application = Application.builder().token(TOKEN).build()
+
+
+def set_webhook():
+    url = f"https://api.telegram.org/bot{TOKEN}/setWebhook"
+    response = requests.post(url, data={"url": WEBHOOK_URL})
+
+    if response.status_code == 200:
+        print("Webhook установлен успешно!")
+    else:
+        print(f"Ошибка при установке вебхука: {response.text}")
+
+
+@csrf_exempt
+async def webhook(request):  # Асинхронная версия
+    try:
+        if request.method == "POST":
+            json_str = request.body.decode("utf-8")
+
+            update = Update.de_json(json.loads(json_str), bot)
+
+            message_text = update.message.text
+            print(f"Message recieved: {message_text}")
+
+            token_match = re.search(r"INFO\s*([A-Za-z0-9]{44})", message_text)
+
+            if token_match:
+                match_token = token_match.group(1)
+                print(f"TOKEN: {match_token}")
+                start_loop_with_token(match_token)
+            else:
+                print("TOKEN NOT FOUND")
+
+            await application.update_queue.put(update)
+
+            return JsonResponse({"status": "ok"})
+        else:
+            return JsonResponse({"status": "failed"}, status=400)
+
+    except Exception as e:
+        print(f"Ошибка в webhook: {e}")
+        print(traceback.format_exc())
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
 def get_token_name(mint):
@@ -416,6 +478,7 @@ def index(request):
             for mint, tracker in active_loops.items()
         ],
     }
+    set_webhook()
 
     return render(request, "index.html", context)
 
@@ -468,6 +531,17 @@ def update_balance(
     except Exception as e:
         print(f"Error updating balance: {e}")
         return False
+
+
+def start_loop_with_token(match_token):
+    mint = match_token
+    loop_time = 2
+
+    name = get_token_name(mint)
+    token_name[mint] = name
+    print(f"name: {name}")
+    tracker = TokenTracker(mint, loop_time, name)
+    tracker.start()
 
 
 @csrf_exempt
