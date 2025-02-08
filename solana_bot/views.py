@@ -50,6 +50,7 @@ active_loops = {}
 loop_statuses = defaultdict(lambda: False)
 loop_updates = {}
 token_name = {}
+
 token_decimals = {}
 
 bot = Bot(token=TOKEN)
@@ -57,7 +58,14 @@ bot = Bot(token=TOKEN)
 application = Application.builder().token(TOKEN).build()
 
 
+def delete_webhook():
+    url = f"https://api.telegram.org/bot{TOKEN}/deleteWebhook"
+    response = requests.get(url)
+    print(response.json())  # Выведет {"ok":true,"result":true}
+
+
 def set_webhook():
+    delete_webhook()  # Сначала удаляем старый вебхук и очищаем обновления
     url = f"https://api.telegram.org/bot{TOKEN}/setWebhook"
     response = requests.post(url, data={"url": WEBHOOK_URL})
 
