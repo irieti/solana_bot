@@ -129,14 +129,10 @@ def get_token_name(mint):
 
 
 def save_largest_accounts(data, mint_address):
-    file_path = f"largest_accounts_{mint_address[:6]}.json"
     all_data = {}
 
     # Добавляем или обновляем данные для текущего mint
     all_data[mint_address] = data
-
-    with open(file_path, "w") as f:
-        json.dump(all_data, f, indent=2)
 
 
 async def fetch_page_with_retry(session, page, semaphore, mint):
