@@ -3,3 +3,5 @@ aiohttp>=3.8.1
 asgiref>=3.5.2
 requests>=2.26.0
 python-dotenv>=1.0.0
+python-telegram-bot==21.10
+gunicorn==21.2.0
