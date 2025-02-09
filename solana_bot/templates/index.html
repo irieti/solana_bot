@@ -313,6 +313,16 @@
                 <button id="load-wallets">Load wallets</button>
                 <ul id="wallet-dropdown" class="dropdown-content"></ul>
             </div>
+
+            <h2>Upload excel file</h2>
+            <input
+                type="file"
+                class="file-input"
+                id="fileInput"
+                accept=".xlsx,.xls"
+            />
+            <button id="load-wallets" onclick="uploadFile()">Upload</button>
+            <p id="message"></p>
         </div>
 
         <script>
@@ -555,6 +565,37 @@
                     .find((row) => row.startsWith('csrftoken='))
                     ?.split('=')[1];
                 return cookieValue || '';
+            }
+
+            function uploadFile() {
+                const fileInput = document.getElementById('fileInput');
+                const message = document.getElementById('message');
+
+                if (fileInput.files.length === 0) {
+                    message.innerText = 'Выберите файл перед загрузкой';
+                    return;
+                }
+
+                const file = fileInput.files[0];
+                const formData = new FormData();
+                formData.append('file', file);
+
+                fetch(`/add_wallets_excel/`, {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.message) {
+                            message.innerText = 'File have been uploaded';
+                        } else {
+                            message.innerText =
+                                'Error: ' + (data.error || 'Unknown error');
+                        }
+                    })
+                    .catch((error) => {
+                        message.innerText = 'Network error: ' + error;
+                    });
             }
         </script>
     </body>

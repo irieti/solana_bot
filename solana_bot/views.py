@@ -30,6 +30,8 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import logging
 import traceback
 import re
+import pandas as pd
+import json
 
 load_dotenv()
 
@@ -235,8 +237,9 @@ async def find_largest_holders(
                 f"{((total_amount/1000000000) / 1000000000) * 100:,.4f}%"
             )
 
-        matching_wallets.sort(key=lambda wallet: wallet["amount"], reverse=True)
         wallets_dict = {wallet["wallet"]: wallet["name"] for wallet in wallets_data}
+
+        # Сортируем словарь по значению (имени)
 
         print(f"Total balance of matching wallets for mint {mint}: {total_amount}")
 
@@ -251,6 +254,7 @@ async def find_largest_holders(
             )
 
             wallet_details_list.append(f"{wallet['name']}, {wallet_amount}")
+            wallet_details_list.sort()
 
         wallet_details = "<br>".join(wallet_details_list)
 
@@ -611,3 +615,37 @@ def delete_wallet(request, index):
             return JsonResponse({"error": "Error, please try again"}, status=400)
     except ValueError:
         return JsonResponse({"error": "Error, please try again"}, status=400)
+
+
+@csrf_exempt
+def add_wallets_excel(request):
+    if request.method == "POST" and request.FILES.get("file"):
+        file = request.FILES["file"]
+
+        try:
+            df = pd.read_excel(file)
+
+            df.columns = df.columns.str.strip()
+
+            if "wallet" in df.columns and "name" in df.columns:
+                wallets_data = df[["wallet", "name"]].to_dict(orient="records")
+
+                with open("wallets.json", "w") as json_file:
+                    json.dump(wallets_data, json_file, indent=4)
+
+                return JsonResponse(
+                    {"message": "Wallets have been updated"}, status=200
+                )
+            else:
+                return JsonResponse(
+                    {
+                        "error": "File must contain 'wallet' and 'name'",
+                        "columns": list(df.columns),
+                    },
+                    status=400,
+                )
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Error occured"}, status=400)

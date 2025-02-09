@@ -30,6 +30,9 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "afa0-152-53-46-74.ngrok-free.app",
     "161.35.39.34",
+    "209.38.167.69",
+    "solbot.space",
+    "www.solbot.space",
 ]
 
 
