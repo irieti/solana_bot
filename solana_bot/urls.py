@@ -28,5 +28,4 @@ urlpatterns = [
     path("get-loop-updates/", views.get_loop_updates, name="get-loop-updates"),
     path("new-wallet/", views.new_wallet, name="new-wallet"),
     path("get_wallets/", views.get_wallets, name="get_wallets"),
-    path("webhook/", views.webhook, name="webhook"),
 ]
