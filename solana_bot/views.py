@@ -55,6 +55,56 @@ token_name = {}
 
 token_decimals = {}
 
+bot = Bot(token=TOKEN)
+
+application = Application.builder().token(TOKEN).build()
+
+
+def set_webhook():
+    delete_url = (
+        f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=true"
+    )
+    requests.get(delete_url)
+    url = f"https://api.telegram.org/bot{TOKEN}/setWebhook"
+    response = requests.post(url, data={"url": WEBHOOK_URL})
+
+    if response.status_code == 200:
+        print("Webhook установлен успешно!")
+    else:
+        print(f"Ошибка при установке вебхука: {response.text}")
+
+
+@csrf_exempt
+async def webhook(request):  # Асинхронная версия
+    try:
+        if request.method == "POST":
+            json_str = request.body.decode("utf-8")
+
+            update = Update.de_json(json.loads(json_str), bot)
+
+            message_text = update.message.text
+            print(f"Message recieved: {message_text}")
+
+            token_match = re.search(r"INFO\s*([A-Za-z0-9]{44})", message_text)
+
+            if token_match:
+                match_token = token_match.group(1)
+                print(f"TOKEN: {match_token}")
+                start_loop_with_token(match_token)
+            else:
+                print("TOKEN NOT FOUND")
+
+            await application.update_queue.put(update)
+
+            return JsonResponse({"status": "ok"})
+        else:
+            return JsonResponse({"status": "failed"}, status=400)
+
+    except Exception as e:
+        print(f"Ошибка в webhook: {e}")
+        print(traceback.format_exc())
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
 
 def get_token_name(mint):
     response = requests.post(
@@ -425,14 +475,13 @@ class TokenTracker:
 # Views
 def index(request):
     context = {
-        "all_mints": [
-            "9L5BqqVA3EJ1XrGrS4HaXssivEewfme3DWoXCTBEVE9e"
-        ],  # Add your mint addresses
+        "all_mints": ["9L5BqqVA3EJ1XrGrS4HaXssivEewfme3DWoXCTBEVE9e"],
         "running_loops": [
             {"mint": mint, "loop_time": tracker.loop_time}
             for mint, tracker in active_loops.items()
         ],
     }
+    set_webhook()
 
     return render(request, "index.html", context)
 

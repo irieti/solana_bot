@@ -5,3 +5,5 @@ requests>=2.26.0
 python-dotenv>=1.0.0
 python-telegram-bot==21.10
 gunicorn==21.2.0
+pandas==2.2.3
+openpyxl
