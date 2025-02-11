@@ -72,20 +72,7 @@ def set_webhook():
 
         # Set new webhook
         url = f"https://api.telegram.org/bot{TOKEN}/setWebhook"
-        webhook_url = (
-            f"https://www.solbot.space/{WEBHOOK_URL}"  # Make sure to use HTTPS
-        )
-
-        response = requests.post(
-            url,
-            json={
-                "url": webhook_url,
-                "allowed_updates": [
-                    "message",
-                    "callback_query",
-                ],  # Specify what updates you want to receive
-            },
-        )
+        response = requests.post(url, data={"url": WEBHOOK_URL})
 
         logger.info(f"Webhook setup response: {response.text}")
 
