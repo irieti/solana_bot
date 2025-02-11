@@ -34,6 +34,7 @@ import pandas as pd
 import json
 import logging
 
+
 logger = logging.getLogger("telegram_bot")
 
 load_dotenv()
@@ -510,16 +511,27 @@ def index(request):
 
 @require_http_methods(["GET"])
 def get_loop_updates(request):
-    try:
-        return JsonResponse(
-            {
-                "status": "success",
-                "updates": (loop_updates),
-                "timestamp": datetime.now().isoformat(),
-            }
-        )
-    except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    start_time = time.time()
+    initial_updates = loop_updates.copy()  # Запоминаем начальное состояние
+
+    while time.time() - start_time < 30:  # Максимальное ожидание 30 секунд
+        if loop_updates != initial_updates:  # Если данные изменились — отправляем ответ
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "updates": loop_updates,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
+        time.sleep(0.1)
+
+    return JsonResponse(
+        {
+            "status": "success",
+            "updates": loop_updates,
+            "timestamp": datetime.now().isoformat(),
+        }
+    )
 
 
 def update_balance(
@@ -604,16 +616,33 @@ def stop_loop(request):
 
 @csrf_exempt
 def get_active_loops(request):
-    loops = [
+    start_time = time.time()
+    initial_loops = active_loops.copy()
+
+    while time.time() - start_time < 30:  # Long polling timeout
+        if active_loops != initial_loops:
+            return create_loops_response()
+        time.sleep(0.1)
+
+    return create_loops_response()
+
+
+def create_loops_response():
+    return JsonResponse(
         {
-            "mint": mint,
-            "loop_time": tracker.loop_time,
-            "name": tracker.name,
-            "mint_part": str(mint)[:6],
+            "status": "success",
+            "loops": [
+                {
+                    "mint": mint,
+                    "loop_time": tracker.loop_time,
+                    "name": tracker.name,
+                    "mint_part": str(mint)[:6],
+                }
+                for mint, tracker in active_loops.items()
+            ],
+            "timestamp": datetime.now().isoformat(),
         }
-        for mint, tracker in active_loops.items()
-    ]
-    return JsonResponse({"loops": loops})
+    )
 
 
 WALLET_FILE = "wallets.json"

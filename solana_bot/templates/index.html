@@ -329,11 +329,23 @@
             document.addEventListener('DOMContentLoaded', function () {
                 const form = document.getElementById('tracker-form');
                 const activeLoopsList = document.getElementById('active-loops');
+                const updatesContainer =
+                    document.getElementById('loop-updates');
 
-                // Update active loops list
+                // Update active loops list (long polling)
                 function updateActiveLoops() {
-                    fetch('/get-active-loops/')
-                        .then((response) => response.json())
+                    fetch('/get-active-loops/', {
+                        method: 'GET',
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                    })
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
                         .then((data) => {
                             if (data.loops.length === 0) {
                                 activeLoopsList.innerHTML =
@@ -344,20 +356,33 @@
                             activeLoopsList.innerHTML = data.loops
                                 .map(
                                     (loop) => `
-                    <li class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span>🔵 ${loop.name} ${loop.mint_part} (${loop.loop_time} sec)</span>
-                        <button
-                            onclick="stopLoop('${loop.mint}')"
-                            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                        >
-                            Stop
-                        </button>
-                    </li>
-                `
+                                <li class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                    <span>🔵 ${loop.name} ${loop.mint_part} (${loop.loop_time} sec)</span>
+                                    <button
+                                        onclick="stopLoop('${loop.mint}')"
+                                        class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                    >
+                                        Stop
+                                    </button>
+                                </li>
+                            `
                                 )
                                 .join('');
+                        })
+                        .catch((error) => {
+                            console.error(
+                                'Error fetching active loops:',
+                                error
+                            );
+                        })
+                        .finally(() => {
+                            // Always set up the next update
+                            setTimeout(updateActiveLoops, 500);
                         });
                 }
+
+                // Start the update loop
+                updateActiveLoops();
 
                 // Start loop
                 form.addEventListener('submit', function (e) {
@@ -407,20 +432,12 @@
                         });
                 };
 
-                // Update active loops every 0,5 seconds
-                setInterval(updateActiveLoops, 500);
-                updateActiveLoops();
-            });
-
-            document.addEventListener('DOMContentLoaded', function () {
-                const updatesContainer =
-                    document.getElementById('loop-updates');
-
+                // Long polling for loop updates
                 function fetchLoopUpdates() {
                     fetch('/get-loop-updates/')
                         .then((response) => response.json())
                         .then((data) => {
-                            updatesContainer.innerHTML = ''; // Очищаем контейнер
+                            updatesContainer.innerHTML = ''; // Clear the container
 
                             if (
                                 !data.updates ||
@@ -434,33 +451,34 @@
                                 return;
                             }
 
-                            // Сортируем обновления по времени в порядке убывания (новые сверху)
                             const sortedUpdates = Object.values(
                                 data.updates
                             ).sort(
-                                (a, b) => new Date(b.time) - new Date(a.time) // Самые свежие изменения идут первыми
+                                (a, b) => new Date(b.time) - new Date(a.time)
                             );
 
                             sortedUpdates.forEach((update) => {
                                 const listItem = document.createElement('li');
                                 listItem.className = 'log-item';
                                 listItem.innerHTML = `
-                                <div class="flex justify-between items-center mb-2">
-                                <span class="font-bold text-lg">${update.mint}  ${update.name}</span></br>
-                                <span class="text-sm text-gray-600">${update.time}</span></br>
-                                </div></br>
-                                <div class="mb-2">
-                                <span class="text-sm font-medium">${update.formatted_balance_changes}</span></div></br>
-                                <div class="text-xl font-semibold mb-2">
-                                ${update.num_matching_wallets} ${update.sign}${update.formatted_total_amount}
-                                </div></br>
-                                <div class="text-sm text-gray-700 whitespace-pre-line">
-                                ${update.wallet_details}
-                                </div></br>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-bold text-lg">${update.mint}  ${update.name}</span></br>
+                                        <span class="text-sm text-gray-600">${update.time}</span></br>
+                                    </div></br>
+                                    <div class="mb-2">
+                                        <span class="text-sm font-medium">${update.formatted_balance_changes}</span></div></br>
+                                    <div class="text-xl font-semibold mb-2">
+                                        ${update.num_matching_wallets} ${update.sign}${update.formatted_total_amount}
+                                    </div></br>
+                                    <div class="text-sm text-gray-700 whitespace-pre-line">
+                                        ${update.wallet_details}
+                                    </div></br>
                                 `;
 
                                 updatesContainer.appendChild(listItem);
                             });
+
+                            fetchLoopUpdates(); // Keep polling after receiving the updates
                         })
                         .catch((error) => {
                             console.error('Error fetching updates:', error);
@@ -469,14 +487,12 @@
                                     Error loading updates. Retrying...
                                 </li>
                             `;
+                            setTimeout(fetchLoopUpdates, 500); // Retry after 0,5 seconds
                         });
                 }
 
-                // Начальная загрузка
+                // Start the long-polling for loop updates
                 fetchLoopUpdates();
-
-                // Обновление каждую секунду
-                setInterval(fetchLoopUpdates, 1000);
             });
 
             document
