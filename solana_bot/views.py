@@ -32,6 +32,9 @@ import traceback
 import re
 import pandas as pd
 import json
+import logging
+
+logger = logging.getLogger("telegram_bot")
 
 load_dotenv()
 
@@ -55,23 +58,55 @@ token_name = {}
 
 token_decimals = {}
 
-bot = Bot(token=TOKEN)
+bot = Bot(token=os.getenv("TOKEN"))
 
 application = Application.builder().token(TOKEN).build()
 
 
 def set_webhook():
-    delete_url = (
-        f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=true"
-    )
-    requests.get(delete_url)
-    url = f"https://api.telegram.org/bot{TOKEN}/setWebhook"
-    response = requests.post(url, data={"url": WEBHOOK_URL})
+    try:
+        # Delete existing webhook
+        delete_url = f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=true"
+        delete_response = requests.get(delete_url)
+        logger.info(f"Delete webhook response: {delete_response.text}")
 
-    if response.status_code == 200:
-        print("Webhook установлен успешно!")
-    else:
-        print(f"Ошибка при установке вебхука: {response.text}")
+        # Set new webhook
+        url = f"https://api.telegram.org/bot{TOKEN}/setWebhook"
+        webhook_url = (
+            f"https://www.solbot.space/{WEBHOOK_URL}"  # Make sure to use HTTPS
+        )
+
+        response = requests.post(
+            url,
+            json={
+                "url": webhook_url,
+                "allowed_updates": [
+                    "message",
+                    "callback_query",
+                ],  # Specify what updates you want to receive
+            },
+        )
+
+        logger.info(f"Webhook setup response: {response.text}")
+
+        if response.status_code == 200:
+            logger.info("Webhook set successfully!")
+
+            # Verify webhook
+            info_url = f"https://api.telegram.org/bot{TOKEN}/getWebhookInfo"
+            info_response = requests.get(info_url)
+            logger.info(f"Webhook info: {info_response.text}")
+
+            return True
+        else:
+            logger.error(
+                f"Failed to set webhook. Status code: {response.status_code}, Response: {response.text}"
+            )
+            return False
+
+    except Exception as e:
+        logger.error(f"Exception during webhook setup: {str(e)}", exc_info=True)
+        return False
 
 
 @csrf_exempt

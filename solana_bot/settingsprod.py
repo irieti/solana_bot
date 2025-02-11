@@ -16,6 +16,46 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+# Logging configuration
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "/home/solanauser/solana_bot/logs/debug.log",
+            "formatter": "verbose",
+        },
+        "telegram_file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "/home/solanauser/solana_bot/logs/telegram.log",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "telegram_bot": {  # Custom logger for your bot
+            "handlers": ["telegram_file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
