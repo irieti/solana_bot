@@ -143,6 +143,7 @@ def toggle_webhook(request):
 @csrf_exempt
 async def webhook(request):
     if not webhook_state["active"]:
+        print("Webhook inactive")
         return JsonResponse({"status": "webhook_inactive"}, status=200)
     try:
         if request.method == "POST":
