@@ -475,27 +475,25 @@
                         const data = await response.json();
 
                         if (data.status === 'success') {
-                            let hasChanges = false;
-
-                            // Обрабатываем каждый цикл
+                            let newActiveLoops = new Map();
                             data.loops.forEach((loop) => {
-                                const existingLoop = activeLoopsState.get(
-                                    loop.mint
-                                );
+                                newActiveLoops.set(loop.mint, loop);
+                            });
 
-                                // Если цикл новый или изменился
-                                if (
-                                    !existingLoop ||
-                                    JSON.stringify(existingLoop) !==
-                                        JSON.stringify(loop)
-                                ) {
-                                    activeLoopsState.set(loop.mint, loop);
+                            // Проверяем, если какие-то элементы были удалены
+                            let hasChanges = false;
+                            activeLoopsState.forEach((_, mint) => {
+                                if (!newActiveLoops.has(mint)) {
                                     hasChanges = true;
                                 }
                             });
 
-                            // Если есть изменения, перерисовываем
-                            if (hasChanges) {
+                            if (
+                                hasChanges ||
+                                JSON.stringify([...newActiveLoops]) !==
+                                    JSON.stringify([...activeLoopsState])
+                            ) {
+                                activeLoopsState = newActiveLoops;
                                 renderActiveLoops();
                             }
                         }

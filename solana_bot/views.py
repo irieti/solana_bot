@@ -283,16 +283,14 @@ async def find_largest_holders(
                     else:
                         empty_pages += 1
 
-                # If we get multiple empty pages in a chunk, assume we've reached the end
                 if empty_pages > chunk_size // 2:
                     stop_fetching = True
                     break
 
-                # Add a small delay between chunks
-                if stop_flag.is_set():  # <-- Используй переданный флаг
+                if stop_flag.is_set():
                     print(f"Stopping find_largest_holders for mint {mint}")
                     break
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.5)
 
         cur_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f"Current time: {cur_time}")
@@ -662,6 +660,8 @@ def stop_loop(request):
         if mint in active_loops:
             tracker = active_loops[mint]
             tracker.stop()
+            print("Current active_loops after stop:", active_loops.keys())
+
             return JsonResponse({"status": "success", "mint": mint})
 
     return JsonResponse({"status": "error"})
