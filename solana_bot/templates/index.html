@@ -498,6 +498,8 @@
                             if (hasChanges) {
                                 renderActiveLoops();
                             }
+
+                            setInterval(updateActiveLoops, 500);
                         }
                     } catch (error) {
                         console.error('Error updating active loops:', error);
