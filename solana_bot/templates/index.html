@@ -467,6 +467,91 @@
                 let updatesState = new Map();
 
                 // Функция для обновления активных циклов
+                async function updateActiveLoops() {
+                    try {
+                        const response = await fetch('/get-active-loops/', {
+                            cache: 'no-store',
+                        });
+                        const data = await response.json();
+
+                        if (data.status === 'success') {
+                            let newActiveLoops = new Map();
+                            data.loops.forEach((loop) => {
+                                newActiveLoops.set(loop.mint, loop);
+                            });
+
+                            // Проверяем, были ли изменения
+                            let hasChanges = false;
+
+                            // Проверяем удаленные элементы
+                            if (activeLoopsState.size !== newActiveLoops.size) {
+                                hasChanges = true;
+                            } else {
+                                activeLoopsState.forEach((loop, mint) => {
+                                    if (
+                                        !newActiveLoops.has(mint) ||
+                                        JSON.stringify(loop) !==
+                                            JSON.stringify(
+                                                newActiveLoops.get(mint)
+                                            )
+                                    ) {
+                                        hasChanges = true;
+                                    }
+                                });
+                            }
+
+                            // Обновляем только если есть изменения
+                            if (hasChanges) {
+                                activeLoopsState = newActiveLoops;
+                                renderActiveLoops();
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error updating active loops:', error);
+                    }
+                }
+
+                // Вызываем реже, чтобы уменьшить нагрузку и избежать мерцания
+                setInterval(updateActiveLoops, 1000);
+
+                function fetchLoopUpdates() {
+                    fetch('/get-loop-updates/')
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.status === 'success' && data.updates) {
+                                let hasChanges = false;
+
+                                Object.entries(data.updates).forEach(
+                                    ([key, update]) => {
+                                        const currentUpdate =
+                                            updatesState.get(key);
+
+                                        // Если update изменился, обновляем состояние
+                                        if (
+                                            !currentUpdate ||
+                                            JSON.stringify(currentUpdate) !==
+                                                JSON.stringify(update)
+                                        ) {
+                                            updatesState.set(key, update);
+                                            hasChanges = true;
+                                        }
+                                    }
+                                );
+
+                                // Рендерим только если есть изменения
+                                if (hasChanges) {
+                                    renderUpdates();
+                                }
+                            }
+
+                            // Продолжаем обновления через 500 мс
+                            setTimeout(fetchLoopUpdates, 500);
+                        })
+                        .catch((error) =>
+                            console.error('Error fetching updates:', error)
+                        );
+                }
+
                 function renderActiveLoops() {
                     requestAnimationFrame(() => {
                         const existingItems = new Map();
@@ -526,47 +611,6 @@
                             Stop
                         </button>
                     `;
-                }
-
-                // Вызываем реже, чтобы уменьшить нагрузку и избежать мерцания
-                setInterval(updateActiveLoops, 1000);
-
-                function fetchLoopUpdates() {
-                    fetch('/get-loop-updates/')
-                        .then((response) => response.json())
-                        .then((data) => {
-                            if (data.status === 'success' && data.updates) {
-                                let hasChanges = false;
-
-                                Object.entries(data.updates).forEach(
-                                    ([key, update]) => {
-                                        const currentUpdate =
-                                            updatesState.get(key);
-
-                                        // Если update изменился, обновляем состояние
-                                        if (
-                                            !currentUpdate ||
-                                            JSON.stringify(currentUpdate) !==
-                                                JSON.stringify(update)
-                                        ) {
-                                            updatesState.set(key, update);
-                                            hasChanges = true;
-                                        }
-                                    }
-                                );
-
-                                // Рендерим только если есть изменения
-                                if (hasChanges) {
-                                    renderUpdates();
-                                }
-                            }
-
-                            // Продолжаем обновления через 500 мс
-                            setTimeout(fetchLoopUpdates, 500);
-                        })
-                        .catch((error) =>
-                            console.error('Error fetching updates:', error)
-                        );
                 }
 
                 function renderUpdates() {
