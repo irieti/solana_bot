@@ -100,6 +100,24 @@ def set_webhook():
 webhook_state = {"active": False}
 
 
+WEBHOOK_STATE_FILE = "webhook_state.json"
+
+
+def load_webhook_state():
+    if os.path.exists(WEBHOOK_STATE_FILE):
+        with open(WEBHOOK_STATE_FILE, "r") as f:
+            return json.load(f)
+    return {"active": False}
+
+
+def save_webhook_state(state):
+    with open(WEBHOOK_STATE_FILE, "w") as f:
+        json.dump(state, f)
+
+
+webhook_state = load_webhook_state()
+
+
 @csrf_exempt
 @require_http_methods(["GET"])
 def webhook_status(request):
@@ -114,6 +132,7 @@ def toggle_webhook(request):
     try:
         data = json.loads(request.body)
         webhook_state["active"] = data.get("active", False)
+        save_webhook_state(webhook_state)  # Сохраняем состояние
         return JsonResponse({"status": "success", "active": webhook_state["active"]})
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
@@ -248,6 +267,7 @@ async def find_largest_holders(
     reversed_balance_changes = []
     sign = ""
     formatted_balance_changes = []
+    previous_sign = ""
 
     while not stop_flag.is_set():
         print(f"Fetching data for {mint}...")
@@ -382,7 +402,7 @@ async def find_largest_holders(
                 )
 
                 balance_changes.append(
-                    f"{num_matching_wallets} {sign} {formatted_previous_total_amount}%"
+                    f"{num_matching_wallets} {previous_sign} {formatted_previous_total_amount}%"
                 )
                 reversed_balance_changes = list(reversed(balance_changes))
                 formatted_balance_changes = "</br>".join(
@@ -411,7 +431,7 @@ async def find_largest_holders(
                 )
 
                 balance_changes.append(
-                    f"{num_matching_wallets} {sign} {formatted_previous_total_amount}%"
+                    f"{num_matching_wallets} {previous_sign} {formatted_previous_total_amount}%"
                 )
                 reversed_balance_changes = list(reversed(balance_changes))
                 formatted_balance_changes = "</br>".join(
@@ -436,12 +456,13 @@ async def find_largest_holders(
                 f"{wallet_details}"
             )
             balance_changes.append(
-                f"{num_matching_wallets} {sign} {formatted_previous_total_amount}%"
+                f"{num_matching_wallets} {previous_sign} {formatted_previous_total_amount}%"
             )
             reversed_balance_changes = list(reversed(balance_changes))
             formatted_balance_changes = "</br>".join(map(str, reversed_balance_changes))
 
         previous_total_balance = total_amount
+        previous_sign = sign
         formatted_previous_total_amount = (
             f"{(previous_total_balance/1000000) / 10000000:,.4f}"
         )
