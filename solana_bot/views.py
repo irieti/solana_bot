@@ -251,7 +251,6 @@ async def find_largest_holders(
 
     while not stop_flag.is_set():
         print(f"Fetching data for {mint}...")
-        await asyncio.sleep(loop_time)  # Симуляция работы
         if stop_flag.is_set():
             print(f"Stopping async task for {mint}")
             break
