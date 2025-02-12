@@ -475,25 +475,26 @@
 
                         if (data.status === 'success') {
                             let hasChanges = false;
-                            let newLoops = new Map();
 
+                            // Проходим по полученным циклам
                             data.loops.forEach((loop) => {
-                                newLoops.set(loop.mint, loop);
+                                const existingLoop = activeLoopsState.get(
+                                    loop.mint
+                                );
+
+                                // Если цикла нет в состоянии или он изменился
                                 if (
-                                    !activeLoopsState.has(loop.mint) ||
-                                    JSON.stringify(
-                                        activeLoopsState.get(loop.mint)
-                                    ) !== JSON.stringify(loop)
+                                    !existingLoop ||
+                                    JSON.stringify(existingLoop) !==
+                                        JSON.stringify(loop)
                                 ) {
+                                    activeLoopsState.set(loop.mint, loop);
                                     hasChanges = true;
                                 }
                             });
 
-                            if (
-                                hasChanges ||
-                                newLoops.size !== activeLoopsState.size
-                            ) {
-                                activeLoopsState = newLoops;
+                            // Если есть изменения, рендерим обновления
+                            if (hasChanges) {
                                 renderActiveLoops();
                             }
                         }
