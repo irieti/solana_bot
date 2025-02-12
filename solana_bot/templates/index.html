@@ -541,33 +541,6 @@
                     return hasChanges;
                 }
 
-                // Функция для обработки изменений в состоянии активных циклов
-                function updateLoopState(newActiveLoops) {
-                    let hasChanges = false;
-
-                    // Обновляем состояние с учётом новых данных
-                    newActiveLoops.forEach((loop, mint) => {
-                        if (
-                            !activeLoopsState.has(mint) ||
-                            JSON.stringify(activeLoopsState.get(mint)) !==
-                                JSON.stringify(loop)
-                        ) {
-                            activeLoopsState.set(mint, loop);
-                            hasChanges = true;
-                        }
-                    });
-
-                    // Удаляем циклы, которые больше не активны
-                    activeLoopsState.forEach((loop, mint) => {
-                        if (!newActiveLoops.has(mint)) {
-                            activeLoopsState.delete(mint);
-                            hasChanges = true;
-                        }
-                    });
-
-                    return hasChanges;
-                }
-
                 // Вызываем реже, чтобы уменьшить нагрузку и избежать мерцания
                 setInterval(updateActiveLoops, 1000);
 
