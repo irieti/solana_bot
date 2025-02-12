@@ -547,20 +547,6 @@ def index(request):
 
 @require_http_methods(["GET"])
 def get_loop_updates(request):
-    start_time = time.time()
-    initial_updates = loop_updates.copy()
-
-    while time.time() - start_time < 30:
-        if loop_updates != initial_updates:
-            return JsonResponse(
-                {
-                    "status": "success",
-                    "updates": loop_updates,
-                    "timestamp": datetime.now().isoformat(),
-                }
-            )
-        time.sleep(0.1)
-
     return JsonResponse(
         {
             "status": "success",
