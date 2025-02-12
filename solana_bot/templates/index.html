@@ -365,6 +365,7 @@
         <script>
             let activeLoopsState = new Map();
             let updatesState = new Map();
+            let lastState = new Map();
 
             document.addEventListener('DOMContentLoaded', function () {
                 // Получаем кнопку и элемент статуса
@@ -480,15 +481,36 @@
                                 newActiveLoops.set(loop.mint, loop);
                             });
 
-                            const hasChanges = updateLoopState(newActiveLoops);
-
-                            if (hasChanges) {
-                                renderActiveLoops();
+                            if (shouldRender(newActiveLoops)) {
+                                renderActiveLoops(newActiveLoops);
                             }
                         }
                     } catch (error) {
                         console.error('Error updating active loops:', error);
                     }
+                }
+
+                function shouldRender(newActiveLoops) {
+                    const mintsNewState = new Map();
+                    let shouldUpdate = false;
+
+                    newActiveLoops.forEach((loop) => {
+                        if (
+                            !lastState.has(loop.mint) ||
+                            JSON.stringify(lastState.get(loop.mint)) !==
+                                JSON.stringify(loop)
+                        ) {
+                            mintsNewState.set(loop.mint, loop);
+                            shouldUpdate = true;
+                        }
+                    });
+
+                    // Если есть изменения, обновляем lastState
+                    if (shouldUpdate) {
+                        lastState = mintsNewState;
+                    }
+
+                    return shouldUpdate;
                 }
 
                 // Обновляем состояние без перерисовки всего списка
@@ -586,19 +608,23 @@
                         );
                 }
 
-                function renderActiveLoops() {
+                function renderActiveLoops(newActiveLoops) {
                     requestAnimationFrame(() => {
-                        const loopItems =
-                            activeLoopsList.querySelectorAll('.loop-item');
-                        const activeLoopMints = new Set();
+                        activeLoopsList.innerHTML = ''; // Чистим список один раз
 
-                        // Проходим по активным циклам и обновляем их
-                        activeLoopsState.forEach((loop) => {
+                        // Если нет активных циклов
+                        if (newActiveLoops.size === 0) {
+                            activeLoopsList.innerHTML =
+                                '<div class="loop-item text-gray-500">No active loops</div>';
+                            return;
+                        }
+
+                        newActiveLoops.forEach((loop) => {
                             let loopItem = document.querySelector(
                                 `[data-mint="${loop.mint}"]`
                             );
 
-                            // Если элемент отсутствует, создаём новый
+                            // Если элемента нет, создаем его
                             if (!loopItem) {
                                 loopItem = document.createElement('div');
                                 loopItem.className =
@@ -607,28 +633,13 @@
                                 loopItem.innerHTML = generateLoopHTML(loop);
                                 activeLoopsList.appendChild(loopItem);
                             } else {
-                                // Если элемент уже существует, проверяем, изменился ли его контент
+                                // Если элемент существует, проверяем, изменился ли контент
                                 const newHTML = generateLoopHTML(loop);
                                 if (loopItem.innerHTML !== newHTML) {
-                                    loopItem.innerHTML = newHTML; // Обновляем только содержимое
+                                    loopItem.innerHTML = newHTML;
                                 }
                             }
-
-                            activeLoopMints.add(loop.mint);
                         });
-
-                        // Удаляем элементы, которых больше нет
-                        loopItems.forEach((loopItem) => {
-                            if (!activeLoopMints.has(loopItem.dataset.mint)) {
-                                loopItem.remove();
-                            }
-                        });
-
-                        // Если нет активных циклов, показываем сообщение
-                        if (activeLoopsState.size === 0) {
-                            activeLoopsList.innerHTML =
-                                '<div class="loop-item text-gray-500">No active loops</div>';
-                        }
                     });
                 }
 
