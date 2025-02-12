@@ -475,40 +475,48 @@
                         const data = await response.json();
 
                         if (data.status === 'success') {
-                            let newActiveLoops = new Map();
+                            const newActiveLoops = new Map();
                             data.loops.forEach((loop) => {
                                 newActiveLoops.set(loop.mint, loop);
                             });
 
-                            // Проверяем, были ли изменения
-                            let hasChanges = false;
+                            // Обрабатываем изменения в состоянии
+                            const hasChanges = updateLoopState(newActiveLoops);
 
-                            // Проверяем удаленные элементы
-                            if (activeLoopsState.size !== newActiveLoops.size) {
-                                hasChanges = true;
-                            } else {
-                                activeLoopsState.forEach((loop, mint) => {
-                                    if (
-                                        !newActiveLoops.has(mint) ||
-                                        JSON.stringify(loop) !==
-                                            JSON.stringify(
-                                                newActiveLoops.get(mint)
-                                            )
-                                    ) {
-                                        hasChanges = true;
-                                    }
-                                });
-                            }
-
-                            // Обновляем только если есть изменения
                             if (hasChanges) {
-                                activeLoopsState = newActiveLoops;
                                 renderActiveLoops();
                             }
                         }
                     } catch (error) {
                         console.error('Error updating active loops:', error);
                     }
+                }
+
+                // Функция для обработки изменений в состоянии активных циклов
+                function updateLoopState(newActiveLoops) {
+                    let hasChanges = false;
+
+                    // Обновляем состояние с учётом новых данных
+                    newActiveLoops.forEach((loop, mint) => {
+                        if (
+                            !activeLoopsState.has(mint) ||
+                            JSON.stringify(activeLoopsState.get(mint)) !==
+                                JSON.stringify(loop)
+                        ) {
+                            activeLoopsState.set(mint, loop);
+                            hasChanges = true;
+                        }
+                    });
+
+                    // Удаляем циклы, которые больше не активны
+                    activeLoopsState.forEach((loop, mint) => {
+                        if (!newActiveLoops.has(mint)) {
+                            activeLoopsState.delete(mint);
+                            hasChanges = true;
+                        }
+                    });
+
+                    return hasChanges;
                 }
 
                 // Вызываем реже, чтобы уменьшить нагрузку и избежать мерцания
@@ -554,7 +562,6 @@
 
                 function renderActiveLoops() {
                     requestAnimationFrame(() => {
-                        // Храним уже существующие элементы
                         const existingItems = new Map();
                         document
                             .querySelectorAll('.loop-item')
@@ -562,34 +569,31 @@
                                 existingItems.set(el.dataset.mint, el);
                             });
 
-                        // Обрабатываем каждый цикл
                         activeLoopsState.forEach((loop, mint) => {
-                            const loopItem = existingItems.get(mint);
+                            let loopItem = existingItems.get(mint);
 
-                            // Если элемент еще не существует в списке, создаем новый
+                            // Если элемента нет, создаём новый
                             if (!loopItem) {
-                                const newLoopItem =
-                                    document.createElement('div');
-                                newLoopItem.className =
+                                loopItem = document.createElement('div');
+                                loopItem.className =
                                     'loop-item flex items-center justify-between p-2 bg-gray-50 rounded mb-2';
-                                newLoopItem.dataset.mint = mint;
-                                newLoopItem.innerHTML = generateLoopHTML(loop);
-                                activeLoopsList.appendChild(newLoopItem);
+                                loopItem.dataset.mint = mint;
+                                loopItem.innerHTML = generateLoopHTML(loop);
+                                activeLoopsList.appendChild(loopItem);
                             } else {
-                                // Если элемент существует, проверяем его содержание
+                                // Если элемент существует, проверяем, изменился ли он
                                 const newHTML = generateLoopHTML(loop);
                                 if (loopItem.innerHTML !== newHTML) {
-                                    loopItem.innerHTML = newHTML; // Обновляем только если изменилось
+                                    loopItem.innerHTML = newHTML;
                                 }
                             }
+
+                            // Удаляем элементы, которые больше не должны отображаться
+                            existingItems.delete(mint);
                         });
 
-                        // Удаляем те элементы, которых больше нет в activeLoopsState
-                        existingItems.forEach((el, mint) => {
-                            if (!activeLoopsState.has(mint)) {
-                                el.remove();
-                            }
-                        });
+                        // Удаляем элементы, которых больше нет в активных циклах
+                        existingItems.forEach((el) => el.remove());
 
                         // Если нет активных циклов, показываем сообщение
                         if (activeLoopsState.size === 0) {
@@ -599,7 +603,6 @@
                     });
                 }
 
-                // Генерация HTML для каждого цикла
                 function generateLoopHTML(loop) {
                     return `
                         <span class="flex items-center">
