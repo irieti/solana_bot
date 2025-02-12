@@ -461,11 +461,11 @@
                 const activeLoopsList = document.getElementById('active-loops');
                 const updatesContainer =
                     document.getElementById('loop-updates');
-                const form = document.getElementById('tracker-form');
 
                 let activeLoopsState = new Map();
                 let updatesState = new Map();
 
+                // Функция для обновления активных циклов
                 async function updateActiveLoops() {
                     try {
                         const response = await fetch('/get-active-loops/', {
@@ -476,13 +476,13 @@
                         if (data.status === 'success') {
                             let hasChanges = false;
 
-                            // Проходим по полученным циклам
+                            // Обрабатываем каждый цикл
                             data.loops.forEach((loop) => {
                                 const existingLoop = activeLoopsState.get(
                                     loop.mint
                                 );
 
-                                // Если цикла нет в состоянии или он изменился
+                                // Если цикл новый или изменился
                                 if (
                                     !existingLoop ||
                                     JSON.stringify(existingLoop) !==
@@ -493,13 +493,13 @@
                                 }
                             });
 
-                            // Если есть изменения, рендерим обновления
+                            // Если есть изменения, перерисовываем
                             if (hasChanges) {
                                 renderActiveLoops();
                             }
                         }
                     } catch (error) {
-                        console.error('Error updating loops:', error);
+                        console.error('Error updating active loops:', error);
                     }
                 }
 
@@ -543,9 +543,7 @@
 
                 function renderActiveLoops() {
                     requestAnimationFrame(() => {
-                        const activeLoopsList =
-                            document.getElementById('active-loops');
-                        activeLoopsList.innerHTML = '';
+                        activeLoopsList.innerHTML = ''; // Очистка списка
 
                         if (activeLoopsState.size === 0) {
                             activeLoopsList.innerHTML =
@@ -564,10 +562,7 @@
                                     <span class="text-gray-500 ml-2">(${loop.mint_part})</span>
                                     <span class="text-gray-400 ml-2">${loop.loop_time}s</span>
                                 </span>
-                                <button
-                                    onclick="stopLoop('${loop.mint}')"
-                                    class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
-                                >
+                                <button onclick="stopLoop('${loop.mint}')" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
                                     Stop
                                 </button>
                             `;
