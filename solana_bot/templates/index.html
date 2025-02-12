@@ -390,6 +390,7 @@
                     // Обновляем текст статуса
                     webhookStatus.textContent = `Status: ${isActive ? 'Active' : 'Inactive'}`;
                 }
+                let isWebhookActive = false;
 
                 // Функция переключения вебхука
                 async function toggleWebhook() {
@@ -436,7 +437,9 @@
                 // Получение начального состояния вебхука
                 async function getInitialWebhookState() {
                     try {
-                        const response = await fetch('/webhook_status/');
+                        const response = await fetch('/webhook_status/', {
+                            cache: 'no-cache',
+                        });
                         if (response.ok) {
                             const data = await response.json();
                             isWebhookActive = data.active;
