@@ -366,12 +366,12 @@
             let activeLoopsState = new Map();
             let updatesState = new Map();
             let lastState = new Map();
+            let isWebhookActive = false;
 
             document.addEventListener('DOMContentLoaded', function () {
                 // Получаем кнопку и элемент статуса
                 const webhookButton = document.getElementById('webhook-toggle');
                 const webhookStatus = document.getElementById('webhook-status');
-                let isWebhookActive = false;
 
                 // Функция обновления UI
                 function updateWebhookUI(isActive) {
@@ -390,7 +390,6 @@
                     // Обновляем текст статуса
                     webhookStatus.textContent = `Status: ${isActive ? 'Active' : 'Inactive'}`;
                 }
-                let isWebhookActive = false;
 
                 // Функция переключения вебхука
                 async function toggleWebhook() {
