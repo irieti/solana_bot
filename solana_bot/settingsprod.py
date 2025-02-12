@@ -79,6 +79,25 @@ ALLOWED_HOSTS = [
     "www.solbot.space",
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "https://www.solbot.space",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+# Обновите CSRF настройки
+CSRF_TRUSTED_ORIGINS = [
+    "https://www.solbot.space",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
+# Установите для разработки (уберите в продакшене)
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = "Lax"
+
 
 # Application definition
 
@@ -90,10 +109,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "solana_bot",
+    "corsheaders",
 ]
 
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

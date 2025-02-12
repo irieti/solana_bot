@@ -100,12 +100,14 @@ def set_webhook():
 webhook_state = {"active": False}
 
 
+@csrf_exempt
 @require_http_methods(["GET"])
 def webhook_status(request):
     """Возвращает текущий статус вебхука"""
     return JsonResponse({"active": webhook_state["active"]})
 
 
+@csrf_exempt
 @require_http_methods(["POST"])
 def toggle_webhook(request):
     """Переключает состояние вебхука"""
