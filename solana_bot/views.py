@@ -145,34 +145,35 @@ async def webhook(request):
     if not webhook_state["active"]:
         print("Webhook inactive")
         return JsonResponse({"status": "webhook_inactive"}, status=200)
-    try:
-        if request.method == "POST":
-            json_str = request.body.decode("utf-8")
+    elif webhook_state["active"]:
+        try:
+            if request.method == "POST":
+                json_str = request.body.decode("utf-8")
 
-            update = Update.de_json(json.loads(json_str), bot)
+                update = Update.de_json(json.loads(json_str), bot)
 
-            message_text = update.message.text
-            print(f"Message recieved: {message_text}")
+                message_text = update.message.text
+                print(f"Message recieved: {message_text}")
 
-            token_match = re.search(r"INFO\s*([A-Za-z0-9]{44})", message_text)
+                token_match = re.search(r"INFO\s*([A-Za-z0-9]{44})", message_text)
 
-            if token_match:
-                match_token = token_match.group(1)
-                print(f"TOKEN: {match_token}")
-                start_loop_with_token(match_token)
+                if token_match:
+                    match_token = token_match.group(1)
+                    print(f"TOKEN: {match_token}")
+                    start_loop_with_token(match_token)
+                else:
+                    print("TOKEN NOT FOUND")
+
+                await application.update_queue.put(update)
+
+                return JsonResponse({"status": "ok"})
             else:
-                print("TOKEN NOT FOUND")
+                return JsonResponse({"status": "failed"}, status=400)
 
-            await application.update_queue.put(update)
-
-            return JsonResponse({"status": "ok"})
-        else:
-            return JsonResponse({"status": "failed"}, status=400)
-
-    except Exception as e:
-        print(f"Ошибка в webhook: {e}")
-        print(traceback.format_exc())
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        except Exception as e:
+            print(f"Ошибка в webhook: {e}")
+            print(traceback.format_exc())
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
 def get_token_name(mint):
