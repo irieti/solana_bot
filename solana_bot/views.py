@@ -584,7 +584,7 @@ def update_balance(
         loop_updates[mint] = {
             "time": cur_time,
             "mint": str(mint)[:6],
-            "name": token_name[mint],
+            "name": token_name.get(mint, "Unknown"),
             "formatted_total_amount": formatted_total_amount,
             "num_matching_wallets": num_matching_wallets,
             "wallet_details": str(wallet_details),  # Ensure string format
@@ -604,6 +604,7 @@ def update_balance(
         return False
 
 
+@csrf_exempt
 def start_loop_with_token(match_token):
     mint = match_token
     loop_time = 2
