@@ -97,8 +97,30 @@ def set_webhook():
         return False
 
 
+webhook_state = {"active": False}
+
+
+@require_http_methods(["GET"])
+def webhook_status(request):
+    """Возвращает текущий статус вебхука"""
+    return JsonResponse({"active": webhook_state["active"]})
+
+
+@require_http_methods(["POST"])
+def toggle_webhook(request):
+    """Переключает состояние вебхука"""
+    try:
+        data = json.loads(request.body)
+        webhook_state["active"] = data.get("active", False)
+        return JsonResponse({"status": "success", "active": webhook_state["active"]})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+
 @csrf_exempt
-async def webhook(request):  # Асинхронная версия
+async def webhook(request):
+    if not webhook_state["active"]:
+        return JsonResponse({"status": "webhook_inactive"}, status=200)
     try:
         if request.method == "POST":
             json_str = request.body.decode("utf-8")
@@ -448,41 +470,51 @@ def send_telegram_message(message, parse_mode="HTML"):
 class TokenTracker:
     def __init__(self, mint, loop_time, name=None):
         self.mint = mint
-        self.loop_time = int(loop_time)  # Уникальное время ожидания для каждого mint
+        self.loop_time = int(loop_time)
         self.stop_flag = threading.Event()
         self.balance_changes = []
         self.name = name
+        self.thread = None
 
     def start(self):
-        """Запускает поток для отслеживания изменений баланса для этого mint с уникальным loop_time."""
-        self.thread = threading.Thread(target=self._run_loop)
-        self.thread.daemon = True
-        self.thread.start()
-        active_loops[self.mint] = self  # Добавляем активный цикл для данного mint
+        """Запускает поток для отслеживания изменений баланса."""
+        if (
+            self.mint not in active_loops
+        ):  # Проверяем, не запущен ли уже трекер для этого минта
+            self.thread = threading.Thread(target=self._run_loop)
+            self.thread.daemon = True
+            self.thread.start()
+            active_loops[self.mint] = self
+            print(f"Started tracking {self.mint}. Active loops: {len(active_loops)}")
 
     def stop(self):
         """Останавливает поток и удаляет его из активных."""
-        self.stop_flag.set()
-        self.thread.join()
-        del active_loops[self.mint]  # Удаляем цикл из активных
+        if self.mint in active_loops:
+            self.stop_flag.set()
+            if self.thread and self.thread.is_alive():
+                self.thread.join(timeout=5)  # Добавляем timeout
+            if self.mint in active_loops:
+                del active_loops[self.mint]
+            print(f"Stopped tracking {self.mint}. Active loops: {len(active_loops)}")
 
     def _run_loop(self):
-        """Цикл, который будет обновлять данные для каждого mint с учетом индивидуального loop_time."""
+        """Цикл обновления данных."""
         previous_total_balance = 0
-
         while not self.stop_flag.is_set():
-            asyncio.run(
-                find_largest_holders(
-                    self.mint,
-                    self.loop_time,  # Используем индивидуальное loop_time для каждого mint
-                    self.stop_flag,
-                    previous_total_balance,
-                    self.balance_changes,
+            try:
+                asyncio.run(
+                    find_largest_holders(
+                        self.mint,
+                        self.loop_time,
+                        self.stop_flag,
+                        previous_total_balance,
+                        self.balance_changes,
+                    )
                 )
-            )
-            self.stop_flag.wait(
-                self.loop_time
-            )  # Ожидание с уникальным временем для данного mint
+                self.stop_flag.wait(self.loop_time)
+            except Exception as e:
+                print(f"Error in run loop for {self.mint}: {e}")
+                break
 
     def save_balance_change(self, change_type):
         """Метод для сохранения изменений баланса."""
@@ -512,10 +544,10 @@ def index(request):
 @require_http_methods(["GET"])
 def get_loop_updates(request):
     start_time = time.time()
-    initial_updates = loop_updates.copy()  # Запоминаем начальное состояние
+    initial_updates = loop_updates.copy()
 
-    while time.time() - start_time < 30:  # Максимальное ожидание 30 секунд
-        if loop_updates != initial_updates:  # Если данные изменились — отправляем ответ
+    while time.time() - start_time < 30:
+        if loop_updates != initial_updates:
             return JsonResponse(
                 {
                     "status": "success",
@@ -584,20 +616,37 @@ def start_loop_with_token(match_token):
 @csrf_exempt
 def start_loop(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        mint = data.get("mint")
-        loop_time = data.get("loop_time")
+        try:
+            data = json.loads(request.body)
+            mint = data.get("mint")
+            loop_time = data.get("loop_time")
 
-        if mint and loop_time:
-            name = get_token_name(mint)
-            token_name[mint] = name
-            print(f"name: {name}")
-            tracker = TokenTracker(mint, loop_time, name)
-            tracker.start()
+            if mint and loop_time:
+                name = get_token_name(mint)
+                token_name[mint] = name
+                print(f"Starting tracker for {mint} with name: {name}")
 
-            return JsonResponse({"status": "success", "mint": mint})
+                # Остановить существующий трекер, если есть
+                if mint in active_loops:
+                    active_loops[mint].stop()
 
-    return JsonResponse({"status": "error"})
+                tracker = TokenTracker(mint, loop_time, name)
+                tracker.start()
+                return JsonResponse(
+                    {
+                        "status": "success",
+                        "mint": mint,
+                        "active_loops": len(active_loops),
+                    }
+                )
+
+            return JsonResponse(
+                {"status": "error", "message": "Missing mint or loop_time"}
+            )
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)})
+
+    return JsonResponse({"status": "error", "message": "Invalid method"})
 
 
 @csrf_exempt
@@ -616,15 +665,29 @@ def stop_loop(request):
 
 @csrf_exempt
 def get_active_loops(request):
-    start_time = time.time()
-    initial_loops = active_loops.copy()
+    """Возвращает активные циклы без long polling."""
+    try:
+        loops_data = [
+            {
+                "mint": mint,
+                "loop_time": tracker.loop_time,
+                "name": tracker.name or "Unknown",
+                "mint_part": str(mint)[:6],
+            }
+            for mint, tracker in active_loops.items()
+            if tracker.thread and tracker.thread.is_alive()
+        ]
 
-    while time.time() - start_time < 30:  # Long polling timeout
-        if active_loops != initial_loops:
-            return create_loops_response()
-        time.sleep(0.1)
-
-    return create_loops_response()
+        return JsonResponse(
+            {
+                "status": "success",
+                "loops": loops_data,
+                "count": len(loops_data),
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)})
 
 
 def create_loops_response():

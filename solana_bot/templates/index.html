@@ -221,12 +221,49 @@
                     gap: 20px; /* Меньший отступ на мобильных */
                 }
             }
+
+            .webhook-control {
+                margin-bottom: 20px;
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+            .webhook-status {
+                margin: 10px 0;
+                font-weight: 500;
+            }
+
+            .webhook-button {
+                padding: 8px 16px;
+                border-radius: 4px;
+                border: none;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+            .webhook-button.active {
+                background-color: #dc3545;
+            }
+
+            .webhook-button:not(.active) {
+                background-color: #28a745;
+            }
         </style>
     </head>
     <body>
         {% csrf_token %}
         <div class="container">
             <h1 class="title">Token Tracker</h1>
+
+            <div class="webhook-control stat-card">
+                <h3>Webhook Control</h3>
+                <div class="webhook-status" id="webhook-status">
+                    Status: Inactive
+                </div>
+                <button id="webhook-toggle" class="webhook-button">
+                    Enable Webhook
+                </button>
+            </div>
 
             <form id="tracker-form">
                 <div class="form-grid">
@@ -327,57 +364,141 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
+                const webhookButton = document.getElementById('webhook-toggle');
+                const webhookStatus = document.getElementById('webhook-status');
+                let isWebhookActive = false;
+
+                // Функция для обновления состояния UI
+                function updateWebhookUI(isActive) {
+                    webhookButton.textContent = isActive
+                        ? 'Disable Webhook'
+                        : 'Enable Webhook';
+                    webhookButton.classList.toggle('active', isActive);
+                    webhookStatus.textContent = `Status: ${isActive ? 'Active' : 'Inactive'}`;
+                }
+
+                // Функция для отправки запроса на изменение состояния вебхука
+                async function toggleWebhook() {
+                    try {
+                        const csrfToken = document.querySelector(
+                            '[name=csrfmiddlewaretoken]'
+                        ).value;
+                        const response = await fetch('/toggle_webhook/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken,
+                            },
+                            body: JSON.stringify({
+                                active: !isWebhookActive,
+                            }),
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            isWebhookActive = data.active;
+                            updateWebhookUI(isWebhookActive);
+                        } else {
+                            console.error('Failed to toggle webhook');
+                            alert(
+                                'Failed to toggle webhook. Please try again.'
+                            );
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred while toggling webhook.');
+                    }
+                }
+
+                // Обработчик нажатия кнопки
+                webhookButton.addEventListener('click', toggleWebhook);
+
+                // Получение начального состояния вебхука при загрузке страницы
+                async function getInitialWebhookState() {
+                    try {
+                        const response = await fetch('/webhook_status/');
+                        if (response.ok) {
+                            const data = await response.json();
+                            isWebhookActive = data.active;
+                            updateWebhookUI(isWebhookActive);
+                        }
+                    } catch (error) {
+                        console.error('Error getting webhook status:', error);
+                    }
+                }
+
+                // Запрос начального состояния
+                getInitialWebhookState();
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
                 const form = document.getElementById('tracker-form');
                 const activeLoopsList = document.getElementById('active-loops');
                 const updatesContainer =
                     document.getElementById('loop-updates');
 
-                // Update active loops list (long polling)
+                // Функция обновления списка активных циклов
                 function updateActiveLoops() {
                     fetch('/get-active-loops/', {
                         method: 'GET',
                         headers: {
                             Accept: 'application/json',
+                            'Cache-Control': 'no-cache',
                         },
                     })
                         .then((response) => {
                             if (!response.ok) {
-                                throw new Error('Network response was not ok');
+                                throw new Error(
+                                    `HTTP error! status: ${response.status}`
+                                );
                             }
                             return response.json();
                         })
                         .then((data) => {
-                            if (data.loops.length === 0) {
-                                activeLoopsList.innerHTML =
-                                    '<li class="text-gray-500">No active loops</li>';
-                                return;
-                            }
+                            console.log('Active loops data:', data); // Отладочный вывод
 
-                            activeLoopsList.innerHTML = data.loops
-                                .map(
-                                    (loop) => `
-                                <li class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                                    <span>🔵 ${loop.name} ${loop.mint_part} (${loop.loop_time} sec)</span>
-                                    <button
-                                        onclick="stopLoop('${loop.mint}')"
-                                        class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                                    >
-                                        Stop
-                                    </button>
-                                </li>
-                            `
-                                )
-                                .join('');
+                            if (data.status === 'success') {
+                                if (data.loops.length === 0) {
+                                    activeLoopsList.innerHTML =
+                                        '<div class="loop-item text-gray-500">No active loops</div>';
+                                } else {
+                                    activeLoopsList.innerHTML = data.loops
+                                        .map(
+                                            (loop) => `
+                                        <div class="loop-item flex items-center justify-between p-2 bg-gray-50 rounded mb-2">
+                                            <span class="flex items-center">
+                                                <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                                ${loop.name || 'Unknown'} 
+                                                <span class="text-gray-500 ml-2">(${loop.mint_part})</span>
+                                                <span class="text-gray-400 ml-2">${loop.loop_time}s</span>
+                                            </span>
+                                            <button
+                                                onclick="stopLoop('${loop.mint}')"
+                                                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
+                                            >
+                                                Stop
+                                            </button>
+                                        </div>
+                                    `
+                                        )
+                                        .join('');
+                                }
+                            } else {
+                                console.error('Error in response:', data);
+                                activeLoopsList.innerHTML =
+                                    '<div class="loop-item text-red-500">Error loading active loops</div>';
+                            }
                         })
                         .catch((error) => {
                             console.error(
                                 'Error fetching active loops:',
                                 error
                             );
+                            activeLoopsList.innerHTML =
+                                '<div class="loop-item text-red-500">Failed to load active loops</div>';
                         })
                         .finally(() => {
-                            // Always set up the next update
-                            setTimeout(updateActiveLoops, 500);
+                            setTimeout(updateActiveLoops, 2000); // Обновление каждые 2 секунды
                         });
                 }
 

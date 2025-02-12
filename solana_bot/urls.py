@@ -30,4 +30,6 @@ urlpatterns = [
     path("get_wallets/", views.get_wallets, name="get_wallets"),
     path("webhook/", views.webhook, name="webhook"),
     path("add_wallets_excel/", views.add_wallets_excel, name="add_wallets_excel"),
+    path("webhook_status/", views.webhook_status, name="webhook_status"),
+    path("toggle_webhook/", views.toggle_webhook, name="toggle_webhook"),
 ]
