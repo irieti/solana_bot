@@ -498,21 +498,13 @@
                     newActiveLoops.forEach((loop) => {
                         if (
                             !lastState.has(loop.mint) ||
-                            JSON.stringify(lastState.get(loop.mint)) !== JSON.stringify(loop)
+                            JSON.stringify(lastState.get(loop.mint)) !==
+                                JSON.stringify(loop)
                         ) {
                             mintsNewState.set(loop.mint, loop);
                             shouldUpdate = true;
                         }
                     });
-
-                    // Если есть изменения, обновляем lastState
-                    if (shouldUpdate) {
-                        lastState = mintsNewState;
-                    }
-
-                    return shouldUpdate;
-                }
-
 
                     // Если есть изменения, обновляем lastState
                     if (shouldUpdate) {
