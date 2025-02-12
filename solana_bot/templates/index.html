@@ -621,7 +621,7 @@
                     await updateActiveLoops(); // Обновление активных циклов
                     await fetchLoopUpdates(); // Начинаем периодическое обновление данных
 
-                    etTimeout(fetchData, 100);
+                    setTimeout(fetchData, 100);
                 }
 
                 startFetching();
