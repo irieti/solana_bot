@@ -655,7 +655,6 @@ def stop_loop(request):
 
 @csrf_exempt
 def get_active_loops(request):
-    """Возвращает активные циклы без long polling."""
     try:
         loops_data = [
             {

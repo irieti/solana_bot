@@ -544,7 +544,7 @@
 
                 function renderActiveLoops() {
                     requestAnimationFrame(() => {
-                        activeLoopsList.innerHTML = ''; // Очистка списка
+                        activeLoopsList.innerHTML = '';
 
                         if (activeLoopsState.size === 0) {
                             activeLoopsList.innerHTML =
@@ -563,7 +563,10 @@
                                     <span class="text-gray-500 ml-2">(${loop.mint_part})</span>
                                     <span class="text-gray-400 ml-2">${loop.loop_time}s</span>
                                 </span>
-                                <button onclick="stopLoop('${loop.mint}')" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
+                                <button
+                                    onclick="stopLoop('${loop.mint}')"
+                                    class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
+                                >
                                     Stop
                                 </button>
                             `;
