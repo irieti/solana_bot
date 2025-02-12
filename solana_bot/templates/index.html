@@ -617,13 +617,14 @@
                     });
                 }
 
-                function startFetching() {
-                    updateActiveLoops(); // Обновление активных циклов
-                    fetchLoopUpdates(); // Начинаем периодическое обновление данных
+                async function startFetching() {
+                    await updateActiveLoops(); // Обновление активных циклов
+                    await fetchLoopUpdates(); // Начинаем периодическое обновление данных
+
+                    etTimeout(fetchData, 100);
                 }
 
-                // Запуск всех функций
-                startFetching();
+                fetchData();
 
                 // Start loop
                 form.addEventListener('submit', function (e) {
