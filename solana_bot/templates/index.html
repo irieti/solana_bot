@@ -480,7 +480,6 @@
                                 newActiveLoops.set(loop.mint, loop);
                             });
 
-                            // Обрабатываем изменения в состоянии
                             const hasChanges = updateLoopState(newActiveLoops);
 
                             if (hasChanges) {
@@ -490,6 +489,33 @@
                     } catch (error) {
                         console.error('Error updating active loops:', error);
                     }
+                }
+
+                // Обновляем состояние без перерисовки всего списка
+                function updateLoopState(newActiveLoops) {
+                    let hasChanges = false;
+
+                    // Обновляем или удаляем циклы, если они изменились
+                    newActiveLoops.forEach((loop, mint) => {
+                        if (
+                            !activeLoopsState.has(mint) ||
+                            JSON.stringify(activeLoopsState.get(mint)) !==
+                                JSON.stringify(loop)
+                        ) {
+                            activeLoopsState.set(mint, loop);
+                            hasChanges = true;
+                        }
+                    });
+
+                    // Удаляем циклы, которых больше нет в новых данных
+                    activeLoopsState.forEach((loop, mint) => {
+                        if (!newActiveLoops.has(mint)) {
+                            activeLoopsState.delete(mint);
+                            hasChanges = true;
+                        }
+                    });
+
+                    return hasChanges;
                 }
 
                 // Функция для обработки изменений в состоянии активных циклов
@@ -562,38 +588,41 @@
 
                 function renderActiveLoops() {
                     requestAnimationFrame(() => {
-                        const existingItems = new Map();
-                        document
-                            .querySelectorAll('.loop-item')
-                            .forEach((el) => {
-                                existingItems.set(el.dataset.mint, el);
-                            });
+                        const loopItems =
+                            activeLoopsList.querySelectorAll('.loop-item');
+                        const activeLoopMints = new Set();
 
-                        activeLoopsState.forEach((loop, mint) => {
-                            let loopItem = existingItems.get(mint);
+                        // Проходим по активным циклам и обновляем их
+                        activeLoopsState.forEach((loop) => {
+                            let loopItem = document.querySelector(
+                                `[data-mint="${loop.mint}"]`
+                            );
 
-                            // Если элемента нет, создаём новый
+                            // Если элемент отсутствует, создаём новый
                             if (!loopItem) {
                                 loopItem = document.createElement('div');
                                 loopItem.className =
                                     'loop-item flex items-center justify-between p-2 bg-gray-50 rounded mb-2';
-                                loopItem.dataset.mint = mint;
+                                loopItem.dataset.mint = loop.mint;
                                 loopItem.innerHTML = generateLoopHTML(loop);
                                 activeLoopsList.appendChild(loopItem);
                             } else {
-                                // Если элемент существует, проверяем, изменился ли он
+                                // Если элемент уже существует, проверяем, изменился ли его контент
                                 const newHTML = generateLoopHTML(loop);
                                 if (loopItem.innerHTML !== newHTML) {
-                                    loopItem.innerHTML = newHTML;
+                                    loopItem.innerHTML = newHTML; // Обновляем только содержимое
                                 }
                             }
 
-                            // Удаляем элементы, которые больше не должны отображаться
-                            existingItems.delete(mint);
+                            activeLoopMints.add(loop.mint);
                         });
 
-                        // Удаляем элементы, которых больше нет в активных циклах
-                        existingItems.forEach((el) => el.remove());
+                        // Удаляем элементы, которых больше нет
+                        loopItems.forEach((loopItem) => {
+                            if (!activeLoopMints.has(loopItem.dataset.mint)) {
+                                loopItem.remove();
+                            }
+                        });
 
                         // Если нет активных циклов, показываем сообщение
                         if (activeLoopsState.size === 0) {
@@ -601,6 +630,23 @@
                                 '<div class="loop-item text-gray-500">No active loops</div>';
                         }
                     });
+                }
+
+                function generateLoopHTML(loop) {
+                    return `
+                        <span class="flex items-center">
+                            <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            ${loop.name || 'Unknown'}
+                            <span class="text-gray-500 ml-2">(${loop.mint_part})</span>
+                            <span class="text-gray-400 ml-2">${loop.loop_time}s</span>
+                        </span>
+                        <button
+                            onclick="stopLoop('${loop.mint}')"
+                            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
+                        >
+                            Stop
+                        </button>
+                    `;
                 }
 
                 function generateLoopHTML(loop) {
