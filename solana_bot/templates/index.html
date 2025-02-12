@@ -480,19 +480,28 @@
                                 newActiveLoops.set(loop.mint, loop);
                             });
 
-                            // Проверяем, если какие-то элементы были удалены
+                            // Проверяем, были ли изменения
                             let hasChanges = false;
-                            activeLoopsState.forEach((_, mint) => {
-                                if (!newActiveLoops.has(mint)) {
-                                    hasChanges = true;
-                                }
-                            });
 
-                            if (
-                                hasChanges ||
-                                JSON.stringify([...newActiveLoops]) !==
-                                    JSON.stringify([...activeLoopsState])
-                            ) {
+                            // Проверяем удаленные элементы
+                            if (activeLoopsState.size !== newActiveLoops.size) {
+                                hasChanges = true;
+                            } else {
+                                activeLoopsState.forEach((loop, mint) => {
+                                    if (
+                                        !newActiveLoops.has(mint) ||
+                                        JSON.stringify(loop) !==
+                                            JSON.stringify(
+                                                newActiveLoops.get(mint)
+                                            )
+                                    ) {
+                                        hasChanges = true;
+                                    }
+                                });
+                            }
+
+                            // Обновляем только если есть изменения
+                            if (hasChanges) {
                                 activeLoopsState = newActiveLoops;
                                 renderActiveLoops();
                             }
@@ -501,7 +510,9 @@
                         console.error('Error updating active loops:', error);
                     }
                 }
-                setInterval(updateActiveLoops, 500);
+
+                // Вызываем реже, чтобы уменьшить нагрузку и избежать мерцания
+                setInterval(updateActiveLoops, 1000);
 
                 function fetchLoopUpdates() {
                     fetch('/get-loop-updates/')
