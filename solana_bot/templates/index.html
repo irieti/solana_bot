@@ -554,6 +554,7 @@
 
                 function renderActiveLoops() {
                     requestAnimationFrame(() => {
+                        // Храним уже существующие элементы
                         const existingItems = new Map();
                         document
                             .querySelectorAll('.loop-item')
@@ -561,33 +562,36 @@
                                 existingItems.set(el.dataset.mint, el);
                             });
 
+                        // Обрабатываем каждый цикл
                         activeLoopsState.forEach((loop, mint) => {
-                            if (!existingItems.has(mint)) {
-                                // Создаём новый элемент, если его нет
-                                const loopItem = document.createElement('div');
-                                loopItem.className =
+                            const loopItem = existingItems.get(mint);
+
+                            // Если элемент еще не существует в списке, создаем новый
+                            if (!loopItem) {
+                                const newLoopItem =
+                                    document.createElement('div');
+                                newLoopItem.className =
                                     'loop-item flex items-center justify-between p-2 bg-gray-50 rounded mb-2';
-                                loopItem.dataset.mint = mint;
-                                loopItem.innerHTML = generateLoopHTML(loop);
-                                activeLoopsList.appendChild(loopItem);
+                                newLoopItem.dataset.mint = mint;
+                                newLoopItem.innerHTML = generateLoopHTML(loop);
+                                activeLoopsList.appendChild(newLoopItem);
                             } else {
-                                // Если элемент уже есть, проверяем, изменился ли контент
-                                const loopItem = existingItems.get(mint);
+                                // Если элемент существует, проверяем его содержание
                                 const newHTML = generateLoopHTML(loop);
                                 if (loopItem.innerHTML !== newHTML) {
-                                    loopItem.innerHTML = newHTML;
+                                    loopItem.innerHTML = newHTML; // Обновляем только если изменилось
                                 }
                             }
                         });
 
-                        // Удаляем те элементы, которых больше нет в `activeLoopsState`
+                        // Удаляем те элементы, которых больше нет в activeLoopsState
                         existingItems.forEach((el, mint) => {
                             if (!activeLoopsState.has(mint)) {
                                 el.remove();
                             }
                         });
 
-                        // Если активных циклов нет, отображаем сообщение
+                        // Если нет активных циклов, показываем сообщение
                         if (activeLoopsState.size === 0) {
                             activeLoopsList.innerHTML =
                                 '<div class="loop-item text-gray-500">No active loops</div>';
@@ -595,7 +599,7 @@
                     });
                 }
 
-                // Генерируем HTML для элемента списка
+                // Генерация HTML для каждого цикла
                 function generateLoopHTML(loop) {
                     return `
                         <span class="flex items-center">
