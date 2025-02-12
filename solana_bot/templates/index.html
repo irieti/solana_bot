@@ -658,6 +658,7 @@
                 window.stopLoop = function (mint) {
                     fetch('/stop-loop/', {
                         method: 'POST',
+                        cache: 'no-store',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRFToken': document.querySelector(

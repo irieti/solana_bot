@@ -288,6 +288,9 @@ async def find_largest_holders(
                     break
 
                 # Add a small delay between chunks
+                if stop_flag.is_set():  # <-- Используй переданный флаг
+                    print(f"Stopping find_largest_holders for mint {mint}")
+                    break
                 await asyncio.sleep(1)
 
         cur_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -492,13 +495,11 @@ class TokenTracker:
             print(f"Started tracking {self.mint}. Active loops: {len(active_loops)}")
 
     def stop(self):
-        """Останавливает поток и удаляет его из активных."""
         if self.mint in active_loops:
             self.stop_flag.set()
             if self.thread and self.thread.is_alive():
-                self.thread.join(timeout=5)  # Добавляем timeout
-            if self.mint in active_loops:
-                del active_loops[self.mint]
+                print(f"Thread {self.mint} is alive, attempting to stop.")
+            del active_loops[self.mint]
             print(f"Stopped tracking {self.mint}. Active loops: {len(active_loops)}")
 
     def _run_loop(self):
