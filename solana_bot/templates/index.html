@@ -460,7 +460,11 @@
                 const updatesContainer =
                     document.getElementById('loop-updates');
 
-                // Функция обновления списка активных циклов
+                // Store state
+                let activeLoopsState = new Map();
+                let updatesState = new Map();
+
+                // Function to update active loops with state management
                 function updateActiveLoops() {
                     fetch('/get-active-loops/', {
                         method: 'GET',
@@ -478,38 +482,56 @@
                             return response.json();
                         })
                         .then((data) => {
-                            console.log('Active loops data:', data); // Отладочный вывод
+                            console.log('Active loops data:', data);
 
                             if (data.status === 'success') {
-                                if (data.loops.length === 0) {
+                                // Update state
+                                const currentLoops = new Map(
+                                    data.loops.map((loop) => [loop.mint, loop])
+                                );
+
+                                // Merge with existing state
+                                currentLoops.forEach((loop, mint) => {
+                                    activeLoopsState.set(mint, loop);
+                                });
+
+                                // Remove inactive loops
+                                activeLoopsState.forEach((loop, mint) => {
+                                    if (!currentLoops.has(mint)) {
+                                        activeLoopsState.delete(mint);
+                                    }
+                                });
+
+                                // Render from state
+                                if (activeLoopsState.size === 0) {
                                     activeLoopsList.innerHTML =
                                         '<div class="loop-item text-gray-500">No active loops</div>';
                                 } else {
-                                    activeLoopsList.innerHTML = data.loops
+                                    activeLoopsList.innerHTML = Array.from(
+                                        activeLoopsState.values()
+                                    )
                                         .map(
                                             (loop) => `
-                                        <div class="loop-item flex items-center justify-between p-2 bg-gray-50 rounded mb-2">
-                                            <span class="flex items-center">
-                                                <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                                                ${loop.name || 'Unknown'} 
-                                                <span class="text-gray-500 ml-2">(${loop.mint_part})</span>
-                                                <span class="text-gray-400 ml-2">${loop.loop_time}s</span>
-                                            </span>
-                                            <button
-                                                onclick="stopLoop('${loop.mint}')"
-                                                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
-                                            >
-                                                Stop
-                                            </button>
-                                        </div>
-                                    `
+                                            <div class="loop-item flex items-center justify-between p-2 bg-gray-50 rounded mb-2">
+                                                <span class="flex items-center">
+                                                    <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                                    ${loop.name || 'Unknown'}
+                                                    <span class="text-gray-500 ml-2">(${loop.mint_part})</span>
+                                                    <span class="text-gray-400 ml-2">${loop.loop_time}s</span>
+                                                </span>
+                                                <button
+                                                    onclick="stopLoop('${loop.mint}')"
+                                                    class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
+                                                >
+                                                    Stop
+                                                </button>
+                                            </div>
+                                        `
                                         )
                                         .join('');
                                 }
                             } else {
                                 console.error('Error in response:', data);
-                                activeLoopsList.innerHTML =
-                                    '<div class="loop-item text-red-500">Error loading active loops</div>';
                             }
                         })
                         .catch((error) => {
@@ -517,16 +539,78 @@
                                 'Error fetching active loops:',
                                 error
                             );
-                            activeLoopsList.innerHTML =
-                                '<div class="loop-item text-red-500">Failed to load active loops</div>';
                         })
                         .finally(() => {
-                            setTimeout(updateActiveLoops, 2000); // Обновление каждые 2 секунды
+                            setTimeout(updateActiveLoops, 2000);
                         });
                 }
 
-                // Start the update loop
+                // Function to fetch and update loop updates with state management
+                function fetchLoopUpdates() {
+                    fetch('/get-loop-updates/')
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.status === 'success' && data.updates) {
+                                // Update state with new updates
+                                Object.entries(data.updates).forEach(
+                                    ([key, update]) => {
+                                        updatesState.set(key, update);
+                                    }
+                                );
+
+                                // Render updates from state
+                                renderUpdates();
+                            }
+
+                            fetchLoopUpdates(); // Continue polling
+                        })
+                        .catch((error) => {
+                            console.error('Error fetching updates:', error);
+                            setTimeout(fetchLoopUpdates, 500);
+                        });
+                }
+
+                // Function to render updates from state
+                function renderUpdates() {
+                    updatesContainer.innerHTML = '';
+
+                    if (updatesState.size === 0) {
+                        const emptyItem = document.createElement('li');
+                        emptyItem.className = 'text-gray-500';
+                        emptyItem.textContent = 'Waiting for updates...';
+                        updatesContainer.appendChild(emptyItem);
+                        return;
+                    }
+
+                    const sortedUpdates = Array.from(
+                        updatesState.values()
+                    ).sort((a, b) => new Date(b.time) - new Date(a.time));
+
+                    sortedUpdates.forEach((update) => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'log-item';
+                        listItem.innerHTML = `
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-lg">${update.mint} ${update.name}</span></br>
+                                <span class="text-sm text-gray-600">${update.time}</span></br>
+                            </div></br>
+                            <div class="mb-2">
+                                <span class="text-sm font-medium">${update.formatted_balance_changes}</span></br>
+                            </div>
+                            <div class="text-xl font-semibold mb-2">
+                                ${update.num_matching_wallets} ${update.sign}${update.formatted_total_amount}
+                            </div></br>
+                            <div class="text-sm text-gray-700 whitespace-pre-line">
+                                ${update.wallet_details}
+                            </div>
+                        `;
+                        updatesContainer.appendChild(listItem);
+                    });
+                }
+
+                // Start both update loops
                 updateActiveLoops();
+                fetchLoopUpdates();
 
                 // Start loop
                 form.addEventListener('submit', function (e) {
@@ -575,68 +659,6 @@
                             }
                         });
                 };
-
-                // Long polling for loop updates
-                function fetchLoopUpdates() {
-                    fetch('/get-loop-updates/')
-                        .then((response) => response.json())
-                        .then((data) => {
-                            updatesContainer.innerHTML = ''; // Clear the container
-
-                            if (
-                                !data.updates ||
-                                Object.keys(data.updates).length === 0
-                            ) {
-                                const emptyItem = document.createElement('li');
-                                emptyItem.className = 'text-gray-500';
-                                emptyItem.textContent =
-                                    'Waiting for updates...';
-                                updatesContainer.appendChild(emptyItem);
-                                return;
-                            }
-
-                            const sortedUpdates = Object.values(
-                                data.updates
-                            ).sort(
-                                (a, b) => new Date(b.time) - new Date(a.time)
-                            );
-
-                            sortedUpdates.forEach((update) => {
-                                const listItem = document.createElement('li');
-                                listItem.className = 'log-item';
-                                listItem.innerHTML = `
-                                    <div class="flex justify-between items-center mb-2">
-                                        <span class="font-bold text-lg">${update.mint}  ${update.name}</span></br>
-                                        <span class="text-sm text-gray-600">${update.time}</span></br>
-                                    </div></br>
-                                    <div class="mb-2">
-                                        <span class="text-sm font-medium">${update.formatted_balance_changes}</span></div></br>
-                                    <div class="text-xl font-semibold mb-2">
-                                        ${update.num_matching_wallets} ${update.sign}${update.formatted_total_amount}
-                                    </div></br>
-                                    <div class="text-sm text-gray-700 whitespace-pre-line">
-                                        ${update.wallet_details}
-                                    </div></br>
-                                `;
-
-                                updatesContainer.appendChild(listItem);
-                            });
-
-                            fetchLoopUpdates(); // Keep polling after receiving the updates
-                        })
-                        .catch((error) => {
-                            console.error('Error fetching updates:', error);
-                            updatesContainer.innerHTML = `
-                                <li class="p-2 bg-red-100 text-red-700 rounded">
-                                    Error loading updates. Retrying...
-                                </li>
-                            `;
-                            setTimeout(fetchLoopUpdates, 500); // Retry after 0,5 seconds
-                        });
-                }
-
-                // Start the long-polling for loop updates
-                fetchLoopUpdates();
             });
 
             document
