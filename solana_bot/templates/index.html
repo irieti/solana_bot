@@ -498,13 +498,12 @@
                             if (hasChanges) {
                                 renderActiveLoops();
                             }
-
-                            setInterval(updateActiveLoops, 500);
                         }
                     } catch (error) {
                         console.error('Error updating active loops:', error);
                     }
                 }
+                setInterval(updateActiveLoops, 500);
 
                 function fetchLoopUpdates() {
                     fetch('/get-loop-updates/')
@@ -621,7 +620,7 @@
                     await updateActiveLoops(); // Обновление активных циклов
                     await fetchLoopUpdates(); // Начинаем периодическое обновление данных
 
-                    setTimeout(startFetching, 100);
+                    setTimeout(startFetching, 5000);
                 }
 
                 startFetching();

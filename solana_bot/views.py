@@ -249,9 +249,11 @@ async def find_largest_holders(
     sign = ""
     formatted_balance_changes = []
 
-    while True:
+    while not stop_flag.is_set():
+        print(f"Fetching data for {mint}...")
+        await asyncio.sleep(loop_time)  # Симуляция работы
         if stop_flag.is_set():
-            print(f"Stopping find_largest_holders for mint {mint}")
+            print(f"Stopping async task for {mint}")
             break
 
         all_accounts = []
@@ -495,31 +497,43 @@ class TokenTracker:
             print(f"Started tracking {self.mint}. Active loops: {len(active_loops)}")
 
     def stop(self):
+        """Принудительно останавливает процесс."""
         if self.mint in active_loops:
-            self.stop_flag.set()
+            print(f"Stopping {self.mint}...")
+            self.stop_flag.set()  # Устанавливаем флаг остановки
+
+            if self.task:
+                print(f"Cancelling async task for {self.mint}...")
+                self.task.cancel()  # Останавливаем `asyncio` таск
+
             if self.thread and self.thread.is_alive():
-                print(f"Thread {self.mint} is alive, attempting to stop.")
+                print(f"Waiting for thread {self.mint} to stop...")
+                self.thread.join(timeout=5)  # Ожидаем завершения потока
+
             del active_loops[self.mint]
             print(f"Stopped tracking {self.mint}. Active loops: {len(active_loops)}")
 
     def _run_loop(self):
         """Цикл обновления данных."""
         previous_total_balance = 0
-        while not self.stop_flag.is_set():
-            try:
-                asyncio.run(
-                    find_largest_holders(
-                        self.mint,
-                        self.loop_time,
-                        self.stop_flag,
-                        previous_total_balance,
-                        self.balance_changes,
-                    )
-                )
-                self.stop_flag.wait(self.loop_time)
-            except Exception as e:
-                print(f"Error in run loop for {self.mint}: {e}")
-                break
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+        self.task = loop.create_task(
+            find_largest_holders(
+                self.mint,
+                self.loop_time,
+                self.stop_flag,
+                previous_total_balance,
+                self.balance_changes,
+            )
+        )
+        try:
+            loop.run_until_complete(self.task)
+        except asyncio.CancelledError:
+            print(f"Task for {self.mint} cancelled.")
+        finally:
+            loop.close()
 
     def save_balance_change(self, change_type):
         """Метод для сохранения изменений баланса."""
