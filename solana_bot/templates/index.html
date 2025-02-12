@@ -364,30 +364,42 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
+                // Получаем кнопку и элемент статуса
                 const webhookButton = document.getElementById('webhook-toggle');
                 const webhookStatus = document.getElementById('webhook-status');
                 let isWebhookActive = false;
 
-                // Функция для обновления состояния UI
+                // Функция обновления UI
                 function updateWebhookUI(isActive) {
+                    // Обновляем текст кнопки
                     webhookButton.textContent = isActive
                         ? 'Disable Webhook'
                         : 'Enable Webhook';
-                    webhookButton.classList.toggle('active', isActive);
+
+                    // Обновляем классы кнопки
+                    if (isActive) {
+                        webhookButton.classList.add('active');
+                    } else {
+                        webhookButton.classList.remove('active');
+                    }
+
+                    // Обновляем текст статуса
                     webhookStatus.textContent = `Status: ${isActive ? 'Active' : 'Inactive'}`;
                 }
 
-                // Функция для отправки запроса на изменение состояния вебхука
+                // Функция переключения вебхука
                 async function toggleWebhook() {
                     try {
-                        const csrfToken = document.querySelector(
+                        // Получаем CSRF токен из cookie
+                        const csrftoken = document.querySelector(
                             '[name=csrfmiddlewaretoken]'
                         ).value;
+
                         const response = await fetch('/toggle_webhook/', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRFToken': csrfToken,
+                                'X-CSRFToken': csrftoken,
                             },
                             body: JSON.stringify({
                                 active: !isWebhookActive,
@@ -396,13 +408,20 @@
 
                         if (response.ok) {
                             const data = await response.json();
-                            isWebhookActive = data.active;
-                            updateWebhookUI(isWebhookActive);
+                            if (data.status === 'success') {
+                                isWebhookActive = data.active;
+                                updateWebhookUI(isWebhookActive);
+                            } else {
+                                console.error(
+                                    'Server returned error:',
+                                    data.message
+                                );
+                                alert(
+                                    'Failed to toggle webhook. Please try again.'
+                                );
+                            }
                         } else {
-                            console.error('Failed to toggle webhook');
-                            alert(
-                                'Failed to toggle webhook. Please try again.'
-                            );
+                            throw new Error('Network response was not ok');
                         }
                     } catch (error) {
                         console.error('Error:', error);
@@ -410,10 +429,7 @@
                     }
                 }
 
-                // Обработчик нажатия кнопки
-                webhookButton.addEventListener('click', toggleWebhook);
-
-                // Получение начального состояния вебхука при загрузке страницы
+                // Получение начального состояния вебхука
                 async function getInitialWebhookState() {
                     try {
                         const response = await fetch('/webhook_status/');
@@ -421,13 +437,20 @@
                             const data = await response.json();
                             isWebhookActive = data.active;
                             updateWebhookUI(isWebhookActive);
+                        } else {
+                            console.error(
+                                'Failed to get initial webhook state'
+                            );
                         }
                     } catch (error) {
                         console.error('Error getting webhook status:', error);
                     }
                 }
 
-                // Запрос начального состояния
+                // Добавляем обработчик клика на кнопку
+                webhookButton.addEventListener('click', toggleWebhook);
+
+                // Запрашиваем начальное состояние при загрузке страницы
                 getInitialWebhookState();
             });
 

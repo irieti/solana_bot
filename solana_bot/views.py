@@ -113,6 +113,8 @@ def toggle_webhook(request):
         data = json.loads(request.body)
         webhook_state["active"] = data.get("active", False)
         return JsonResponse({"status": "success", "active": webhook_state["active"]})
+    except json.JSONDecodeError:
+        return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
